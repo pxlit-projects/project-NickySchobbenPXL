@@ -2,8 +2,10 @@ package pxl.be.services.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pxl.be.services.domain.Post;
 import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
+import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
 import pxl.be.services.services.IPostService;
 
@@ -16,25 +18,56 @@ public class PostService implements IPostService {
     private final PostRepository postRepository;
     @Override
     public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream().map(post -> new PostResponse()).toList();
+        return postRepository.findAll().stream().map(this::mapPostEntityToPostResponse).toList();
     }
 
     @Override
     public PostResponse getPostById(Long id) {
-        return null;
+        return mapPostEntityToPostResponse(findPostById(id));
     }
 
     @Override
     public void deletePost(Long id) {
-
+        postRepository.delete(findPostById(id));
     }
 
     @Override
     public Long addPost(PostRequest postRequest) {
-        return null;
+        Post post = mapPostRequestToPostEntity(postRequest);
+        return postRepository.save(post).getId();
     }
 
     @Override
     public void updatePostById(Long id, PostRequest postRequest) {
+        Post post = findPostById(id);
+        post.setTitle(post.getTitle());
+        post.setContent(post.getContent());
+        post.setAuthor(post.getAuthor());
+        post.setDate(post.getDate());
+
+        postRepository.save(post);
+    }
+
+    public Post findPostById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Post with id " + id + " cannot be found"));
+    }
+
+
+    public Post mapPostRequestToPostEntity(PostRequest postRequest) {
+        return Post.builder()
+                .title(postRequest.getTitle())
+                .content(postRequest.getContent())
+                .author(postRequest.getAuthor())
+                .date(postRequest.getDate())
+                .build();
+    }
+
+    public PostResponse mapPostEntityToPostResponse(Post post) {
+        return PostResponse.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .author(post.getAuthor())
+                .date(post.getDate())
+                .build();
     }
 }
