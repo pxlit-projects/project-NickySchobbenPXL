@@ -12,7 +12,7 @@ public interface IPostService {
 
     PostResponse getPostById(Long id);
 
-    void deletePost(Long id);
+    void deletePostById(Long id);
 
     Long addPost(PostRequest postRequest);
 

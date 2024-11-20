@@ -27,7 +27,7 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public void deletePost(Long id) {
+    public void deletePostById(Long id) {
         postRepository.delete(findPostById(id));
     }
 
@@ -40,10 +40,10 @@ public class PostService implements IPostService {
     @Override
     public void updatePostById(Long id, PostRequest postRequest) {
         Post post = findPostById(id);
-        post.setTitle(post.getTitle());
-        post.setContent(post.getContent());
-        post.setAuthor(post.getAuthor());
-        post.setDate(post.getDate());
+        post.setTitle(postRequest.getTitle());
+        post.setContent(postRequest.getContent());
+        post.setAuthor(postRequest.getAuthor());
+        post.setDate(postRequest.getDate());
 
         postRepository.save(post);
     }
