@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pxl.be.services.domain.PostStatus;
 
 import java.time.LocalDate;
 
@@ -18,5 +19,5 @@ public class PostResponse {
     private String content;
     private String author;
     private LocalDate date;
-    private boolean published;
+    private PostStatus postStatus;
 }

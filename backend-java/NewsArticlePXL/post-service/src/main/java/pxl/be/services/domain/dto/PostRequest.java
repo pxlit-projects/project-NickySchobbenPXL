@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pxl.be.services.domain.PostStatus;
 
 import java.time.LocalDate;
 
@@ -12,9 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequest {
-
     private String title;
     private String content;
     private String author;
-    private LocalDate date;
+    private PostStatus postStatus;
 }

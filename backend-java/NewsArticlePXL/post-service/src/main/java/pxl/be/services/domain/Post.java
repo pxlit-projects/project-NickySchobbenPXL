@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="post")
+@Table(name="posts")
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,5 +23,7 @@ public class Post {
     private String content;
     private String author;
     private LocalDate date;
-    private boolean published = false;
+
+    @Enumerated(EnumType.STRING)
+    private PostStatus postStatus;
 }

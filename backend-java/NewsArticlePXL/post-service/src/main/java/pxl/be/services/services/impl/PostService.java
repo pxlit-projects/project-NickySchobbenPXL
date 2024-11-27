@@ -3,12 +3,14 @@ package pxl.be.services.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pxl.be.services.domain.Post;
+import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
 import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
 import pxl.be.services.services.IPostService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -43,8 +45,8 @@ public class PostService implements IPostService {
         post.setTitle(postRequest.getTitle());
         post.setContent(postRequest.getContent());
         post.setAuthor(postRequest.getAuthor());
-        post.setDate(postRequest.getDate());
-
+        post.setPostStatus(postRequest.getPostStatus());
+        post.setDate(LocalDate.now());
         postRepository.save(post);
     }
 
@@ -58,7 +60,8 @@ public class PostService implements IPostService {
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
                 .author(postRequest.getAuthor())
-                .date(postRequest.getDate())
+                .postStatus(postRequest.getPostStatus())
+                .date(LocalDate.now())
                 .build();
     }
 
@@ -69,7 +72,7 @@ public class PostService implements IPostService {
                 .content(post.getContent())
                 .author(post.getAuthor())
                 .date(post.getDate())
-                .published(post.isPublished())
+                .postStatus(post.getPostStatus())
                 .build();
     }
 }
