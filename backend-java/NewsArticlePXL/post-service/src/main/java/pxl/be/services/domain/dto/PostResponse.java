@@ -13,9 +13,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PostResponse {
 
-    private long Id;
+    private Long Id;
     private String title;
     private String content;
     private String author;
     private LocalDate date;
+    private boolean published;
 }

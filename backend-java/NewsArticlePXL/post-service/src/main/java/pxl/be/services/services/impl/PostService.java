@@ -64,10 +64,12 @@ public class PostService implements IPostService {
 
     public PostResponse mapPostEntityToPostResponse(Post post) {
         return PostResponse.builder()
+                .Id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor())
                 .date(post.getDate())
+                .published(post.isPublished())
                 .build();
     }
 }
