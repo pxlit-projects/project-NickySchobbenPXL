@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pxl.be.services.domain.PostStatus;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
 @NoArgsConstructor
