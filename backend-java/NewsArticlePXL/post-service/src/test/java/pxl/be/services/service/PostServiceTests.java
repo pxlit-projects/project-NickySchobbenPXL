@@ -6,7 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import pxl.be.services.domain.Post;
+import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
 import pxl.be.services.exception.PostNotFoundException;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes= PostServiceTests.class)
 public class PostServiceTests {
 
     @Mock
@@ -37,13 +40,13 @@ public class PostServiceTests {
 
     @BeforeEach
     void setup() {
-        LocalDate date = LocalDate.of(2024, 2, 14);
         postOne = Post.builder()
                 .id(1L)
                 .title("testTitleOne")
                 .content("testContentOne")
                 .author("testAuthorOne")
-                .date(date)
+                .date(LocalDate.of(2024, 2, 14))
+                .postStatus(PostStatus.CONCEPT)
                 .build();
 
         postTwo = Post.builder()
@@ -51,14 +54,15 @@ public class PostServiceTests {
                 .title("testTitleTwo")
                 .content("testContentTwo")
                 .author("testAuthorTwo")
-                .date(date)
+                .date(LocalDate.of(2024, 2, 14))
+                .postStatus(PostStatus.WAITING_FOR_APPROVAL)
                 .build();
 
         postRequest = PostRequest.builder()
                 .title("testTitleRequest")
                 .content("testContentRequest")
                 .author("testAuthorRequest")
-                .date(date)
+                .postStatus(PostStatus.APPROVED)
                 .build();
     }
 
@@ -128,7 +132,6 @@ public class PostServiceTests {
                 .title("newTitle")
                 .content("newContent")
                 .author("newAuthor")
-                .date(LocalDate.of(2024, 2, 14))
                 .build();
 
         when(postRepository.findById(id)).thenReturn(Optional.of(postOne));
@@ -138,7 +141,7 @@ public class PostServiceTests {
         assertEquals("newTitle", postOne.getTitle());
         assertEquals("newContent", postOne.getContent());
         assertEquals("newAuthor", postOne.getAuthor());
-        assertEquals(LocalDate.of(2024, 2, 14), postOne.getDate());
+        assertEquals(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth()), postOne.getDate());
     }
 
     @Test
@@ -147,7 +150,6 @@ public class PostServiceTests {
                 .title("newTitle")
                 .content("newContent")
                 .author("newAuthor")
-                .date(LocalDate.of(2024, 2, 14))
                 .build();
 
         when(postRepository.findById(999L)).thenReturn(Optional.empty());

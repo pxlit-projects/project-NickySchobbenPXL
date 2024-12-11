@@ -5,6 +5,7 @@
         <groupId>pxl.be.services</groupId>
         <artifactId>NewsArticlePXL</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>discovery-service</artifactId>

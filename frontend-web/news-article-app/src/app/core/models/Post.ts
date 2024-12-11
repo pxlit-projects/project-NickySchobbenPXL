@@ -4,15 +4,15 @@ export class Post {
   private content: string;
   private author: string;
   private date: Date;
-  private published: boolean;
+  private postStatus: string;
 
-  constructor(id: number, title: string, content: string, author: string, date: Date, published: boolean) {
+  constructor(id: number, title: string, content: string, author: string, date: Date, postStatus: string) {
     this.id = id;
     this.title = title;
     this.content = content;
     this.author = author;
     this.date = date;
-    this.published = published;
+    this.postStatus = postStatus;
   }
 
   getId(): number {
@@ -35,7 +35,7 @@ export class Post {
     return this.date;
   }
 
-  getPublished(): boolean {
-    return this.published;
+  getPostStatus(): string {
+    return this.postStatus;
   }
 }

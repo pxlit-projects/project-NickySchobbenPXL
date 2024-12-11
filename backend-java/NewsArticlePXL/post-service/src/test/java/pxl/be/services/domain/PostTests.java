@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest
+@SpringBootTest(classes = PostTests.class)
 public class PostTests {
 
     private Post post;
@@ -30,11 +30,12 @@ public class PostTests {
     @Test
     void testPost_AllArgsConstructor() {
         LocalDate localDate = LocalDate.of(2024, 2, 14);
-        Post post = new Post(1L,"testTitle", "testContent", "testAuthor", localDate);
+        Post post = new Post(1L,"testTitle", "testContent", "testAuthor", localDate, PostStatus.APPROVED);
         assertThat(post.getId()).isEqualTo(1);
         assertThat(post.getTitle()).isEqualTo("testTitle");
         assertThat(post.getContent()).isEqualTo("testContent");
         assertThat(post.getAuthor()).isEqualTo("testAuthor");
         assertThat(post.getDate()).isEqualTo(localDate);
+        assertThat(post.getPostStatus()).isEqualTo(PostStatus.APPROVED);
     }
 }

@@ -1,0 +1,56 @@
+<div class="py-12">
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+      <div class="p-6 bg-white border-b border-gray-200">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+          <div class="mb-4">
+            <label for="title" class="text-xl text-gray-600">Title</label>
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              class="border-2 border-gray-300 p-2 w-full"
+              value="">
+            <span *ngIf="myForm.get('title')?.invalid && myForm.get('title')?.touched" class="text-red-500">
+              Title is required
+            </span>
+          </div>
+
+          <div class="mb-4">
+            <label for="author"  class="text-xl text-gray-600">Author</label>
+            <input
+              id="author"
+              type="text"
+              formControlName="author"
+              class="border-2 border-gray-300 p-2 w-full"
+              value="">
+            <span *ngIf="myForm.get('author')?.invalid && myForm.get('author')?.touched" class="text-red-500">
+              Author is required
+            </span>
+          </div>
+
+          <div class="mb-8">
+            <label for="content" class="text-xl text-gray-600 block">Content</label>
+            <textarea
+              id="content"
+              formControlName="content"
+              name="content"
+              class="border-2 border-gray-500 w-full h-72 mt-2"
+            ></textarea>
+            <span *ngIf="myForm.get('content')?.invalid && myForm.get('content')?.touched" class="text-red-500">
+              Post cannot be submitted without any content.
+            </span>
+          </div>
+
+          <div class="flex p-1">
+            <select formControlName="action" class="border-2 border-gray-300 border-r p-2">
+              <option value="Save">Save and Publish</option>
+              <option value="SaveAsDraft">Save Draft</option>
+            </select>
+            <button type="submit" [disabled]="myForm.invalid" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

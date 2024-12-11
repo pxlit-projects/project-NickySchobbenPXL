@@ -3,10 +3,13 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import {provideHttpClient} from "@angular/common/http";
+import {PostService} from "./features/posts/services/PostService/post.service";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(),
-    provideRouter(routes)]
+    provideRouter(routes),
+    { provide: PostService },
+    ]
 };

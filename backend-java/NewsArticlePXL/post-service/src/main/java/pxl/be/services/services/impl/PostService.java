@@ -18,9 +18,27 @@ import java.util.List;
 public class PostService implements IPostService {
 
     private final PostRepository postRepository;
+
+
+    // TEMPORARILY HERE FOR TESTING PURPOSE.
     @Override
     public List<PostResponse> getAllPosts() {
         return postRepository.findAll().stream().map(this::mapPostEntityToPostResponse).toList();
+    }
+
+    @Override
+    public List<PostResponse> getAllPublishedPosts() {
+        return retrieveAllPostsFilteredBySpecificStatus(PostStatus.APPROVED).stream().map(this::mapPostEntityToPostResponse).toList();
+    }
+
+    @Override
+    public List<PostResponse> getAllConceptPosts() {
+        return retrieveAllPostsFilteredBySpecificStatus(PostStatus.CONCEPT).stream().map(this::mapPostEntityToPostResponse).toList();
+    }
+
+    @Override
+    public List<PostResponse> getAllUnpublishedPosts() {
+        return retrieveAllPostsFilteredBySpecificStatus(PostStatus.WAITING_FOR_APPROVAL).stream().map(this::mapPostEntityToPostResponse).toList();
     }
 
     @Override
@@ -74,5 +92,9 @@ public class PostService implements IPostService {
                 .date(post.getDate())
                 .postStatus(post.getPostStatus())
                 .build();
+    }
+
+    public List<Post> retrieveAllPostsFilteredBySpecificStatus(PostStatus postStatus) {
+        return postRepository.findAll().stream().filter(post -> post.getPostStatus() == postStatus).toList();
     }
 }

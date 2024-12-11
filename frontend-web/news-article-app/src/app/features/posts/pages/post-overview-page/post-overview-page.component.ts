@@ -9,7 +9,8 @@ import {CommonModule} from "@angular/common";
   imports: [CommonModule
   ],
   templateUrl: './post-overview-page.component.html',
-  styleUrl: './post-overview-page.component.css'
+  styleUrl: './post-overview-page.component.css',
+  providers: [PostService],
 })
 export class PostOverviewPageComponent implements OnInit {
   postList: Post[] = [];

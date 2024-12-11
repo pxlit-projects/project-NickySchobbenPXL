@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { Post } from "../../../../core/models/Post";
+import {CreatePost} from "../../../../core/models/CreatePost";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
-  BASEAPIURL: string = 'http://localhost:8081/api/post';
+  BASEAPIURL: string = 'http://localhost:8081/api/posts';
   http: HttpClient = inject(HttpClient);
 
   constructor() {}
@@ -21,6 +22,14 @@ export class PostService {
     );
   }
 
+  public createNewPost(formData: any): Observable<void> {
+    const createPost = this.mapFormDataToCreatePost(formData);
+    return this.http.post<void>(this.BASEAPIURL, createPost).pipe(
+      tap(() => console.log("New Post Created")),
+      catchError(this.handleError)
+    );
+  }
+
   private mapToPost(postData: any): Post {
     return new Post(
       postData.id,
@@ -28,7 +37,16 @@ export class PostService {
       postData.content,
       postData.author,
       new Date(postData.date),
-      postData.published
+      postData.postStatus
+    );
+  }
+
+  private mapFormDataToCreatePost(formData : any): CreatePost {
+    return new CreatePost(
+      formData.title,
+      formData.author,
+      formData.content,
+      formData.action
     );
   }
 
