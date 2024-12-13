@@ -31,8 +31,8 @@ export class Post {
     return this.author;
   }
 
-  getDate(): Date {
-    return this.date;
+  getDate(): string {
+    return new Intl.DateTimeFormat('en-GB').format(this.date);
   }
 
   getPostStatus(): string {

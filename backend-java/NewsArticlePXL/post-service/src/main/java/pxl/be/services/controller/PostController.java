@@ -15,37 +15,26 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class PostController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
 
     private final IPostService postService;
 
+    @GetMapping()
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts());
+    }
+
+    @GetMapping("/{chatId}")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long chatId) {
+        return ResponseEntity.ok(postService.getPostById(chatId));
+    }
+
     @PostMapping
     public ResponseEntity<Long> addPost(@RequestBody PostRequest postRequest) {
         Long id = postService.addPost(postRequest);
         return ResponseEntity.created(URI.create("/api/post/" + id)).build();
-    }
-
-    @GetMapping("/published")
-    public ResponseEntity<List<PostResponse>> getAllPublishedPosts() {
-        return ResponseEntity.ok(postService.getAllPublishedPosts());
-    }
-
-    @GetMapping("/concept")
-    public ResponseEntity<List<PostResponse>> getAllConceptPosts() {
-        return ResponseEntity.ok(postService.getAllConceptPosts());
-    }
-
-    @GetMapping("/unpublished")
-    public ResponseEntity<List<PostResponse>> getAllUnpublishedPosts() {
-        return ResponseEntity.ok(postService.getAllUnpublishedPosts());
-    }
-
-    // TEMPORARY FOR TESTING
-    @GetMapping()
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
     }
 }

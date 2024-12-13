@@ -22,10 +22,25 @@ export class PostService {
     );
   }
 
+  public getPostsByPostStatus(postStatus: string) : Observable<Post[]> {
+    console.log(postStatus);
+    return this.getPosts().pipe(
+      map(posts => posts.filter(post => post.getPostStatus() == postStatus))
+    );
+  }
+
   public createNewPost(formData: any): Observable<void> {
     const createPost = this.mapFormDataToCreatePost(formData);
     return this.http.post<void>(this.BASEAPIURL, createPost).pipe(
-      tap(() => console.log("New Post Created")),
+      catchError(this.handleError)
+    );
+  }
+
+  public getPostById(postId: number): Observable<Post> {
+    const url = `${this.BASEAPIURL}/${postId}`;
+    return this.http.get<any>(url).pipe(
+      map(postData => this.mapToPost(postData)),
+      tap(post => console.log('Fetched post:', post)),
       catchError(this.handleError)
     );
   }

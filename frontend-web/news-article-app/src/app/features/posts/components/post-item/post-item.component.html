@@ -1,1 +1,36 @@
-<p>post-item works!</p>
+<a [routerLink]="['/post', post.getId()]" class="block">
+  <article class="p-6 bg-white rounded-lg border border-gray-200 hover:bg-gray-100">
+    <div class="flex justify-between items-center mb-5 text-gray-500">
+      <span
+        class="bg-primary-100 text-primary-800 text-xl font-medium inline-flex items-center rounded"
+        [ngClass]="{
+        'text-green-500': post.getPostStatus() === 'APPROVED',
+        'text-red-500': post.getPostStatus() === 'WAITING_FOR_APPROVAL',
+        'text-blue-500': post.getPostStatus() === 'CONCEPT'
+        }"
+      >
+        {{ post.getPostStatus() }}
+      </span>
+      <span class="text-sm">{{post.getDate()}}</span>
+    </div>
+    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{post.getTitle()}}</h2>
+    <p class="mb-5 font-light text-gray-500">{{post.getContent()}}</p>
+    <div class="flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+        <span class="font-medium">{{post.getAuthor()}}</span>
+      </div>
+      <a href="#" class="inline-flex items-center font-medium text-primary-600 hover:underline">
+        Read more
+        <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </article>
+</a>
+
+
+
