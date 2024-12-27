@@ -29,7 +29,7 @@
             </span>
           </div>
 
-          <div class="mb-8">
+          <div class="mb-3">
             <label for="content" class="text-xl text-gray-600 block">Content</label>
             <textarea
               id="content"
@@ -42,12 +42,22 @@
             </span>
           </div>
 
-          <div class="flex p-1">
+          <div class="flex">
             <select formControlName="action" class="border-2 border-gray-300 border-r p-2">
               <option value="Save">Save and Publish</option>
               <option value="SaveAsDraft">Save Draft</option>
             </select>
+          </div>
+
+          <div class="pt-3">
             <button type="submit" [disabled]="myForm.invalid" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
+            <button type="button" class="p-3 bg-red-500 text-white hover:bg-red-400 ml-4" (click)="goBack()">Cancel</button>
+          </div>
+
+          <div class="mt-5">
+            <span *ngIf="submittedMessage" class="text-green-500">
+                {{submittedMessage}}
+            </span>
           </div>
         </form>
       </div>

@@ -1,0 +1,52 @@
+<div class="py-12">
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+      <div class="p-6 bg-white border-b border-gray-200">
+        <form (ngSubmit)="onSubmit()">
+          <div class="mb-4">
+            <label for="title" class="text-xl text-gray-600">Title</label>
+            <input
+              id="title"
+              type="text"
+              [(ngModel)]="updatablePost.title"
+              name="title"
+              class="border-2 border-gray-300 p-2 w-full"
+              required>
+            <span *ngIf="!updatablePost.title && updatablePost.title !== ''" class="text-red-500">
+              Title is required
+            </span>
+          </div>
+
+          <div class="mb-4">
+            <label for="author"  class="text-xl text-gray-600">Author</label>
+            <input
+              id="author"
+              type="text"
+              [(ngModel)]="updatablePost.author"
+              name="author"
+              class="border-2 border-gray-300 p-2 w-full"
+              required>
+            <span *ngIf="!updatablePost.author && updatablePost.author !== ''" class="text-red-500">
+              Author is required
+            </span>
+          </div>
+
+          <div class="mb-8">
+            <label for="content" class="text-xl text-gray-600 block">Content</label>
+            <textarea
+              id="content"
+              [(ngModel)]="updatablePost.content"
+              name="content"
+              class="border-2 border-gray-500 w-full h-72 mt-2"
+              required></textarea>
+            <span *ngIf="!updatablePost.content && updatablePost.content !== ''" class="text-red-500">
+              Post cannot be submitted without any content.
+            </span>
+          </div>
+          <button type="submit" [disabled]="!updatablePost.title || !updatablePost.author || !updatablePost.content" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
+          <button type="button" class="p-3 bg-red-500 text-white hover:bg-red-400 ml-4" (click)="goBack()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

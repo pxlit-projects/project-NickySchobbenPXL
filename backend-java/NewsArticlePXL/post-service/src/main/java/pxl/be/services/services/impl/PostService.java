@@ -1,11 +1,15 @@
 package pxl.be.services.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pxl.be.services.domain.Post;
 import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
+import pxl.be.services.domain.dto.UpdatablePostRequest;
+import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
 import pxl.be.services.services.IPostService;
@@ -18,6 +22,7 @@ import java.util.List;
 public class PostService implements IPostService {
 
     private final PostRepository postRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostService.class);
 
 
     // TEMPORARILY HERE FOR TESTING PURPOSE.
@@ -42,13 +47,13 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public PostResponse getPostById(Long id) {
-        return mapPostEntityToPostResponse(findPostById(id));
+    public PostResponse getPostById(Long postId) {
+        return mapPostEntityToPostResponse(findPostById(postId));
     }
 
     @Override
-    public void deletePostById(Long id) {
-        postRepository.delete(findPostById(id));
+    public void deletePostById(Long postId) {
+        postRepository.delete(findPostById(postId));
     }
 
     @Override
@@ -58,13 +63,28 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public void updatePostById(Long id, PostRequest postRequest) {
-        Post post = findPostById(id);
-        post.setTitle(postRequest.getTitle());
-        post.setContent(postRequest.getContent());
-        post.setAuthor(postRequest.getAuthor());
-        post.setPostStatus(postRequest.getPostStatus());
-        post.setDate(LocalDate.now());
+    public void updatePostById(Long postId, UpdatablePostRequest updatablePost) {
+        Post post = findPostById(postId);
+        post.setTitle(updatablePost.getTitle());
+        post.setContent(updatablePost.getContent());
+        post.setAuthor(updatablePost.getAuthor());
+        post.setPostStatus(PostStatus.WAITING_FOR_APPROVAL);
+        postRepository.save(post);
+    }
+
+    @Override
+    public void updatePostStatusById(Long postId, UpdatePostStatusRequest updatePostStatusRequest) {
+        LOGGER.info("Attempting to update poststatus for post with id " + postId + "\n");
+        Post post = findPostById(postId);
+        post.setPostStatus(updatePostStatusRequest.getPostStatus());
+        postRepository.save(post);
+        LOGGER.info("The poststatus for post with postId " + postId + " has been succesfully updated!");
+    }
+
+    @Override
+    public void publishPostById(Long postId) {
+        Post post = findPostById(postId);
+        post.setPostStatus(PostStatus.PUBLISHED);
         postRepository.save(post);
     }
 

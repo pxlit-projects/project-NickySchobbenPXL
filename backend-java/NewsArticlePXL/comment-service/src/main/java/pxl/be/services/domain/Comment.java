@@ -7,8 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name="post")
+@Table(name="comments")
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,4 +19,8 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private Long postId;
+    private String description;
+    private String commenter;
+    private LocalDate dateOfComment;
 }

@@ -1,15 +1,18 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {PostDetailComponent} from "../../components/post-detail/post-detail.component";
 import {PostService} from "../../services/PostService/post.service";
-import {Post} from "../../../../core/models/Post";
-import {NgOptimizedImage} from "@angular/common";
+import {Post} from "../../../../core/models/posts/Post";
+import {CommentPageComponent} from "../../../comments/pages/comment-page/comment-page.component";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-post-detail-page',
   standalone: true,
   imports: [
     PostDetailComponent,
+    CommentPageComponent,
+    CommonModule
   ],
   templateUrl: './post-detail-page.component.html',
   styleUrl: './post-detail-page.component.css'
@@ -20,11 +23,18 @@ export class PostDetailPageComponent implements OnInit{
   serv: PostService = inject(PostService);
   post!: Post;
 
+  constructor(private router: Router) {
+  }
+
   ngOnInit(): void {
     this.serv.getPostById(this.postId).subscribe({
       next: (data) => {
         this.post = data;
       }
     });
+  }
+
+  navigateToReview(postId: number) {
+    this.router.navigate([`/posts/${postId}/review`]);
   }
 }

@@ -1,0 +1,57 @@
+<div class="py-12">
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+      <div class="p-6 bg-white border-b border-gray-200">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+
+          <div class="mb-4">
+            <label for="reviewerName" class="text-xl text-gray-600">Reviewer</label>
+            <input
+              id="reviewerName"
+              type="text"
+              formControlName="reviewerName"
+              class="border-2 border-gray-300 p-2 w-full"
+              value="">
+            <span *ngIf="myForm.get('reviewerName')?.invalid && myForm.get('reviewerName')?.touched" class="text-red-500">
+              Reviewer is required
+            </span>
+          </div>
+
+          <div class="block">
+            <label class="text-xl text-gray-600 block mt-5">Approval status:</label>
+            <select formControlName="action" class="border-2 border-gray-300 border-r p-2">
+              <option value="Approve">Approve</option>
+              <option value="Deny">Deny</option>
+            </select>
+          </div>
+
+          <div *ngIf="myForm.get('action')?.value === 'Deny'" class="mb-8 mt-5">
+            <label for="content" class="text-xl text-gray-600 block">Additional information</label>
+            <textarea
+              id="content"
+              formControlName="content"
+              name="content"
+              class="border-2 border-gray-500 w-full h-72 mt-2"
+            ></textarea>
+            <span *ngIf="myForm.get('content')?.invalid && myForm.get('content')?.touched" class="text-red-500">
+              Post cannot be reviewed without any additional information.
+            </span>
+          </div>
+
+          <div class="mt-5">
+            <button type="submit" [disabled]="myForm.invalid" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
+            <button type="button" class="p-3 bg-red-500 text-white hover:bg-red-400 ml-4" (click)="goBack()">Cancel
+            </button>
+          </div>
+
+          <div class="mt-5">
+            <span *ngIf="submittedMessage" class="text-green-500">
+                {{submittedMessage}}
+            </span>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

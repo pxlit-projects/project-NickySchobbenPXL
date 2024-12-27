@@ -5,6 +5,8 @@ import {PostUnpublishedPageComponent} from "./features/posts/pages/post-unpublis
 import {TestPageComponent} from "./test-page/test-page.component";
 import {PostConceptPageComponent} from "./features/posts/pages/post-concept-page/post-concept-page.component";
 import {PostDetailPageComponent} from "./features/posts/pages/post-detail-page/post-detail-page.component";
+import {PostUpdatePageComponent} from "./features/posts/pages/post-update-page/post-update-page.component";
+import {ReviewPageComponent} from "./features/review/pages/review-page/review-page.component";
 
 export const routes: Routes = [
   {path: 'posts', component: PostOverviewPageComponent},
@@ -12,5 +14,7 @@ export const routes: Routes = [
   {path: 'test', component: TestPageComponent},
   {path: 'posts/unpublished', component:PostUnpublishedPageComponent},
   {path: 'posts/concept', component: PostConceptPageComponent},
-  { path: 'post/:id', component: PostDetailPageComponent },
+  {path: 'posts/:id', component: PostDetailPageComponent },
+  {path: 'posts/:id/update', component: PostUpdatePageComponent },
+  {path: 'posts/:id/review', component: ReviewPageComponent},
 ];

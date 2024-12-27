@@ -7,8 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name="review")
+@Table(name="reviews")
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,4 +20,14 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private Long postId;
+
+    private String reviewerName;
+    private String reviewContent;
+
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus reviewStatus;
+
+    private LocalDate reviewDate;
 }

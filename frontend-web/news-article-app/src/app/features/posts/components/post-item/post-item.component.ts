@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Post} from "../../../../core/models/Post";
-import {NgClass} from "@angular/common";
+import {Post} from "../../../../core/models/posts/Post";
+import {CommonModule, NgClass} from "@angular/common";
 import {RouterLink} from "@angular/router";
 
 @Component({
@@ -8,7 +8,8 @@ import {RouterLink} from "@angular/router";
   standalone: true,
   imports: [
     NgClass,
-    RouterLink
+    RouterLink,
+    CommonModule
   ],
   templateUrl: './post-item.component.html',
   styleUrl: './post-item.component.css'

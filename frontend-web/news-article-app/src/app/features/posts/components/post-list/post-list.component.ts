@@ -1,5 +1,5 @@
 import {Component, inject, Input, OnInit} from '@angular/core';
-import {Post} from "../../../../core/models/Post";
+import {Post} from "../../../../core/models/posts/Post";
 import {PostService} from "../../services/PostService/post.service";
 import {NgForOf} from "@angular/common";
 import {PostItemComponent} from "../post-item/post-item.component";
