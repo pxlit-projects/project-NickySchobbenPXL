@@ -1,1 +1,3 @@
-<app-post-update-form *ngIf="updatablePost" [updatablePost]="updatablePost" [postId]="postId"></app-post-update-form>
+@if(updatablePost) {
+  <app-post-update-form [updatablePost]="updatablePost" [postId]="postId"></app-post-update-form>
+}

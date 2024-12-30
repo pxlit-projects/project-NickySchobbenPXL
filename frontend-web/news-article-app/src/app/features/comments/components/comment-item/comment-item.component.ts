@@ -2,9 +2,9 @@ import {Component, inject, Input} from '@angular/core';
 import {Comment} from "../../../../core/models/comments/Comment";
 import {CommonModule} from "@angular/common";
 import {CommentService} from "../../services/CommentService/comment.service";
-import {comment} from "postcss";
 import {FormsModule} from "@angular/forms";
 import {UpdatableComment} from "../../../../core/models/comments/UpdatableComment";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-comment-item',
@@ -19,8 +19,8 @@ import {UpdatableComment} from "../../../../core/models/comments/UpdatableCommen
 export class CommentItemComponent {
   @Input() comment!: Comment;
   updatableComment: UpdatableComment = {description: ''};
-  isDropdownOpen: boolean = false;
-  editMode: boolean = false;
+  isDropdownOpen = false;
+  editMode = false;
   serv: CommentService = inject(CommentService);
 
   public toggleDropdown(): void {
@@ -43,7 +43,7 @@ export class CommentItemComponent {
     this.updatableComment.description = this.comment.description;
     this.serv.updateComment(this.comment.commentId, this.updatableComment).subscribe({
         next: () => console.log('Comment updated successfully.'),
-        error: (err: any) => console.error('Error updating comment:', err),
+        error: (err: HttpErrorResponse) => console.error('Error updating comment:', err),
     });
   }
 

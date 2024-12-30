@@ -14,32 +14,15 @@ import {PostItemComponent} from "../post-item/post-item.component";
   templateUrl: './post-list.component.html',
   styleUrl: './post-list.component.css'
 })
-export class PostListComponent implements OnInit{
-  @Input() filteredPostStatus: string = '';
-  @Input() title: string = '';
-  @Input() subtitle: string = '';
+export class PostListComponent implements OnInit {
+  @Input() filteredPostStatus = '';
+  @Input() title = '';
+  @Input() subtitle = '';
   posts!: Post[];
   serv: PostService = inject(PostService);
 
   ngOnInit(): void {
-    if (this.filteredPostStatus === '') {
-      this.getAllPosts();
-    }
-    else {
-      this.getPostsByPostStatus();
-    }
-  }
-
-  getAllPosts(): void {
-    this.serv.getPosts().subscribe({
-      next: (data) => {
-        this.posts = data;
-      }
-    });
-  }
-
-  getPostsByPostStatus(): void {
-    this.serv.getPostsByPostStatus(this.filteredPostStatus).subscribe({
+    this.serv.getUnpublishedPostsByPostStatus(this.filteredPostStatus).subscribe({
       next: (data) => {
         this.posts = data;
       }

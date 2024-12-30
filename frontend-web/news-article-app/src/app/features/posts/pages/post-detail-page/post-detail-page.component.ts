@@ -30,6 +30,10 @@ export class PostDetailPageComponent implements OnInit{
     this.serv.getPostById(this.postId).subscribe({
       next: (data) => {
         this.post = data;
+      },
+      error: (err) => {
+        console.error('Error fetching post:', err);
+        this.router.navigate(['/notfound']);
       }
     });
   }

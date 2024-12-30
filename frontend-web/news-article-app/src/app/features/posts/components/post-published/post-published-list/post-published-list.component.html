@@ -1,0 +1,17 @@
+@if(filteredPosts) {
+  <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 relative">
+    <div class="grid grid-cols-1 gap-5">
+      @if(filteredPosts[0]) {
+        <app-post-published-item-big [post]="filteredPosts[0]"></app-post-published-item-big>
+      }
+      @if(filteredPosts[1]) {
+        <app-post-published-item-big [post]="filteredPosts[1]"></app-post-published-item-big>
+      }
+      <div class="sm:col-span-7 grid grid-cols-3 lg:grid-cols-3 gap-5">
+        @for(post of filteredPosts.slice(2); track post.getId()) {
+          <app-post-published-item-small [post]="post"></app-post-published-item-small>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,18 +1,20 @@
 export class Post {
-  private id: number;
-  private title: string;
-  private content: string;
-  private author: string;
-  private date: Date;
-  private postStatus: string;
+  readonly id: number;
+  readonly title: string;
+  readonly content: string;
+  readonly author: string;
+  readonly date: Date;
+  readonly postStatus: string;
+  readonly category: string;
 
-  constructor(id: number, title: string, content: string, author: string, date: Date, postStatus: string) {
+  constructor(id: number, title: string, content: string, author: string, date: Date, postStatus: string, category: string) {
     this.id = id;
     this.title = title;
     this.content = content;
     this.author = author;
     this.date = date;
     this.postStatus = postStatus;
+    this.category = category;
   }
 
   getId(): number {
@@ -37,5 +39,9 @@ export class Post {
 
   getPostStatus(): string {
     return this.postStatus;
+  }
+
+  getCategory(): string {
+    return this.category;
   }
 }

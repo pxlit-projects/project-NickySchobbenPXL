@@ -5,33 +5,49 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { Post } from "../../../../core/models/posts/Post";
 import {CreatePost} from "../../../../core/models/posts/CreatePost";
 import {UpdatablePost} from "../../../../core/models/posts/UpdatablePost";
+import {CreatePostForm} from "../../../../core/models/posts/CreatePostForm";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
-  private baseUrl: string = 'http://localhost:8081/api/posts';
+  private baseUrl = 'http://localhost:8081/api/posts';
   http: HttpClient = inject(HttpClient);
 
-  constructor() {}
 
-  public getPosts(): Observable<Post[]> {
-    return this.http.get<any[]>(this.baseUrl).pipe(
+  public getAllUnpublishedPosts(): Observable<Post[]> {
+    return this.http.get<Post[]>(`${this.baseUrl}/unpublished`).pipe(
       map(postsData => postsData.map(postData => this.mapToPost(postData))),
       tap(post => console.log(post, " fetched")),
       catchError(this.handleError)
     );
   }
 
-  public getPostsByPostStatus(postStatus: string) : Observable<Post[]> {
-    console.log(postStatus);
-    return this.getPosts().pipe(
+  public getAllPublishedPosts(): Observable<Post[]> {
+    return this.http.get<Post[]>(`${this.baseUrl}/published`).pipe(
+      map(postsData => postsData.map(postData => this.mapToPost(postData))),
+      tap(post => console.log(post, " fetched")),
+      catchError(this.handleError)
+    );
+  }
+
+  public getUnpublishedPostsByPostStatus(postStatus: string) : Observable<Post[]> {
+    return this.getAllUnpublishedPosts().pipe(
       map(posts => posts.filter(post => post.getPostStatus() == postStatus))
     );
   }
 
-  public createNewPost(formData: any): Observable<void> {
-    const createPost = this.mapFormDataToCreatePost(formData);
+  public getPublishedPostsByCategory(category: string): Observable<Post[]> {
+    return this.getAllPublishedPosts().pipe(
+      map(posts =>
+        category === "" ? posts : posts.filter(post => post.getCategory() === category)
+      )
+    );
+  }
+
+
+  public createNewPost(createPostForm: CreatePostForm): Observable<void> {
+    const createPost = this.mapFormDataToCreatePost(createPostForm);
     return this.http.post<void>(this.baseUrl, createPost).pipe(
       catchError(this.handleError)
     );
@@ -39,7 +55,7 @@ export class PostService {
 
   public getPostById(postId: number): Observable<Post> {
     const url = `${this.baseUrl}/${postId}`;
-    return this.http.get<any>(url).pipe(
+    return this.http.get<Post>(url).pipe(
       map(postData => this.mapToPost(postData)),
       tap(post => console.log('Fetched post:', post)),
       catchError(this.handleError)
@@ -74,31 +90,34 @@ export class PostService {
     })
   }
 
-  private mapToPost(postData: any): Post {
+  private mapToPost(postData: Post): Post {
     return new Post(
       postData.id,
       postData.title,
       postData.content,
       postData.author,
       new Date(postData.date),
-      postData.postStatus
+      postData.postStatus,
+      postData.category
     );
   }
 
-  private mapFormDataToCreatePost(formData : any): CreatePost {
+  private mapFormDataToCreatePost(formData : CreatePostForm): CreatePost {
     return new CreatePost(
       formData.title,
       formData.author,
       formData.content,
-      formData.action
+      formData.action,
+      formData.category
     );
   }
 
-  public mapPostToUpdatablePost(postData: Post) : UpdatablePost {
+  public getUpdatablePost(postData: Post) : UpdatablePost {
     return new UpdatablePost(
       postData.getTitle(),
-      postData.getContent(),
       postData.getAuthor(),
+      postData.getContent(),
+      postData.getCategory()
     )
   }
 
@@ -112,4 +131,3 @@ export class PostService {
     return throwError(() => new Error(`something bad happened; please try again later.`));
   }
 }
-

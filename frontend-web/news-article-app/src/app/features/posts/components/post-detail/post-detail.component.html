@@ -1,35 +1,50 @@
-<div *ngIf="post">
-  <div class="p-6 bg-white">
-    <h5 class="text-5xl font-bold tracking-tight text-gray-900">{{post.getTitle()}}</h5>
-    <p
-      class="mt-5 text-xl font-normal text-gray-700 min-h-[600px]">
-      {{post.getContent()}}
-    </p>
-  </div>
-  <div class="mx-3 border-t border-slate-200 pb-3 pt-2 px-1">
-    <div class="flex justify-between items-center">
+@if(post) {
+  <div class="bg-white min-h-[1200px] w-1/2 m-auto relative">
+    @if(user?.role === "admin") {
+      <button (click)="navigateToReview(post.getId())" class="cursor-pointer">
+      <span class="review-icon material-symbols-outlined absolute top-3 right-3 z-10">
+        person_check
+      </span>
+      </button>
+    }
+    <img src="assets/logo_pxl_digital.png" alt="My image" class="w-[90%] m-auto pt-3 relative z-20">
+    <div class="p-6 bg-white">
+      <h2 class="text-xl tracking-tight text-gray-900 mt-2">{{post.getCategory()}}</h2>
+      <h5 class="text-5xl font-bold tracking-tight text-gray-900 mt-10">{{post.getTitle()}}</h5>
+      <p
+        class="mt-5 text-xl font-normal text-gray-700 min-h-[600px]">
+        {{post.getContent()}}
+      </p>
+    </div>
+    <div class="mx-3 border-t border-slate-200 pb-3 pt-2 px-1">
+      <div class="flex justify-between items-center">
     <span>
       Author: {{ post.getAuthor() }}
     </span>
-      <span class="text-sm text-slate-600 font-medium">
-      Last update: {{ post.getDate() }}
+        <span class="text-sm text-slate-600 font-medium">
+      Created at: {{ post.getDate() }}
     </span>
+      </div>
     </div>
-  </div>
 
-  <button
-    *ngIf="post.getPostStatus() === 'APPROVED'"
-    class="fixed bottom-4 left-4 rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-xl text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
-    type="button"
-    (click)="publishPost(post.getId())"
-  >
-    Publish
-  </button>
-  <div class="flex justify-end">
-    <button class="cursor-pointer" (click)="navigateToUpdate(post.getId())">
+    @if(post.getPostStatus() === "APPROVED") {
+      <button
+        class="fixed bottom-4 left-4 rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-xl text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
+        type="button"
+        (click)="publishPost(post.getId())"
+      >
+        Publish
+      </button>
+    }
+
+    @if(user?.role === "admin") {
+      <div class="flex justify-end">
+        <button class="cursor-pointer" (click)="navigateToUpdate(post.getId())">
         <span class="edit-icon material-symbols-outlined">
           edit
         </span>
-    </button>
+        </button>
+      </div>
+    }
   </div>
-</div>
+}

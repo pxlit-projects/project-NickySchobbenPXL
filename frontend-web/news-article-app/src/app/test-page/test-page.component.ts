@@ -6,6 +6,9 @@ import {
   CommentSectionContainerComponent
 } from "../features/comments/components/comment-section-container/comment-section-container.component";
 import {CommentPageComponent} from "../features/comments/pages/comment-page/comment-page.component";
+import {LoginFormComponent} from "../features/login/components/login-form/login-form.component";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {PostFilterComponent} from "../features/posts/components/post-filter/post-filter.component";
 
 @Component({
   selector: 'app-test-page',
@@ -15,7 +18,11 @@ import {CommentPageComponent} from "../features/comments/pages/comment-page/comm
     CommentInputComponent,
     CommentListComponent,
     CommentSectionContainerComponent,
-    CommentPageComponent
+    CommentPageComponent,
+    LoginFormComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    PostFilterComponent
   ],
   templateUrl: './test-page.component.html',
   styleUrl: './test-page.component.css'

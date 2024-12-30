@@ -1,1 +1,27 @@
-<p>user-navbar works!</p>
+<nav class="bg-orange-400 border-gray-200">
+  <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+    <div class="flex items-center justify-center w-full space-x-8">
+      <ul class="flex space-x-6 font-medium text-white">
+        <li>
+          <button (click)="navigateTo('/home/posts')" class="py-2 px-3 rounded text-2xl hover:bg-orange-600 cursor-pointer">News</button>
+        </li>
+        <li>
+          <button (click)="navigateTo('/home/posts/sport')" class="py-2 px-3 rounded text-2xl hover:bg-orange-600 cursor-pointer">Sports</button>
+        </li>
+        <li>
+          <button (click)="navigateTo('/home/posts/politics')" class="py-2 px-3 rounded text-2xl hover:bg-orange-600 cursor-pointer">Politics</button>
+        </li>
+        <li>
+          <button (click)="navigateTo('/home/posts/regional')" class="py-2 px-3 rounded text-2xl hover:bg-orange-600 cursor-pointer">Regional</button>
+        </li>
+        <li>
+          <button (click)="navigateTo('/home/posts/science')"  class="py-2 px-3 rounded text-2xl hover:bg-orange-600 cursor-pointer">Science</button>
+        </li>
+      </ul>
+    </div>
+    <button (click)="logOut()" type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+      <img class="w-12 h-12 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="user photo">
+    </button>
+  </div>
+</nav>
+

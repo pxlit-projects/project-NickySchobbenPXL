@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pxl.be.services.domain.dto.CommentRequest;
 import pxl.be.services.domain.dto.CommentResponse;
 import pxl.be.services.domain.dto.UpdatableCommentRequest;
-import pxl.be.services.services.ICommentService;
+import pxl.be.services.service.ICommentService;
 
 import java.util.List;
 

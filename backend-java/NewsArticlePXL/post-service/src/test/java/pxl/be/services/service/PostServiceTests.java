@@ -2,29 +2,29 @@ package pxl.be.services.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 import pxl.be.services.domain.Post;
+import pxl.be.services.domain.PostCategory;
 import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
+import pxl.be.services.domain.dto.UpdatablePostRequest;
+import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
-import pxl.be.services.services.impl.PostService;
+import pxl.be.services.service.impl.PostService;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes= PostServiceTests.class)
 public class PostServiceTests {
 
     @Mock
@@ -33,126 +33,149 @@ public class PostServiceTests {
     @InjectMocks
     private PostService postService;
 
-    private Post postOne;
-    private Post postTwo;
-
-    private PostRequest postRequest;
+    private Post post;
 
     @BeforeEach
-    void setup() {
-        postOne = Post.builder()
-                .id(1L)
-                .title("testTitleOne")
-                .content("testContentOne")
-                .author("testAuthorOne")
-                .date(LocalDate.of(2024, 2, 14))
-                .postStatus(PostStatus.CONCEPT)
-                .build();
-
-        postTwo = Post.builder()
-                .id(2L)
-                .title("testTitleTwo")
-                .content("testContentTwo")
-                .author("testAuthorTwo")
-                .date(LocalDate.of(2024, 2, 14))
-                .postStatus(PostStatus.WAITING_FOR_APPROVAL)
-                .build();
-
-        postRequest = PostRequest.builder()
-                .title("testTitleRequest")
-                .content("testContentRequest")
-                .author("testAuthorRequest")
-                .postStatus(PostStatus.APPROVED)
-                .build();
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        post = new Post(1L, "Title", "Content", "Author", LocalDate.now(), PostStatus.CONCEPT, PostCategory.SPORTS);
     }
 
     @Test
-    void testGetAllPosts_Success() {
-        List<Post> listOfPosts = Arrays.asList(postOne, postTwo);
-        when(postRepository.findAll()).thenReturn(listOfPosts);
+    void testGetAllUnpublishedPosts() {
+        when(postRepository.findAll()).thenReturn(List.of(post));
 
-        List<PostResponse> result = postService.getAllPosts();
+        List<PostResponse> result = postService.getAllUnpublishedPosts();
 
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(postOne.getTitle(), result.get(0).getTitle());
-        assertEquals(postTwo.getTitle(), result.get(1).getTitle());
+        assertEquals(1, result.size());
+        assertEquals(PostStatus.CONCEPT, result.get(0).getPostStatus());
     }
 
     @Test
-    void testAddPost_Success() {
-        when(postRepository.save(any(Post.class))).thenReturn(postOne);
-        Long result = postService.addPost(postRequest);
+    void testGetAllPublishedPosts() {
+        post.setPostStatus(PostStatus.PUBLISHED);
+        when(postRepository.findAll()).thenReturn(List.of(post));
+
+        List<PostResponse> result = postService.getAllPublishedPosts();
+
         assertNotNull(result);
-        assertEquals(Long.valueOf(1L), result);
+        assertEquals(1, result.size());
+        assertEquals(PostStatus.PUBLISHED, result.get(0).getPostStatus());
     }
 
     @Test
-    void testGetPostById_Success() {
-        when(postRepository.findById(postOne.getId())).thenReturn(Optional.of(postOne));
-        PostResponse response = postService.getPostById(postOne.getId());
-        assertEquals(response.getTitle(), postOne.getTitle());
-        assertEquals(response.getContent(), postOne.getContent());
-        assertEquals(response.getAuthor(), postOne.getAuthor());
-        assertEquals(response.getDate(), postOne.getDate());
+    void testGetPostById() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
 
-        verify(postRepository, times(1)).findById(postOne.getId());
+        PostResponse result = postService.getPostById(1L);
+
+        assertNotNull(result);
+        assertEquals(post.getId(), result.getId());
+        assertEquals(post.getTitle(), result.getTitle());
     }
 
     @Test
-    void testGetPostByIdWithWrongId_ThrowPostNotFoundException() {
-        Long id = postOne.getId();
-        when(postRepository.findById(id)).thenReturn(Optional.empty());
-        PostNotFoundException exception = assertThrows(PostNotFoundException.class, () -> postService.getPostById(id));
-        assertEquals("Post with id " + id + " cannot be found", exception.getMessage());
+    void testGetPostByIdNotFound() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class, () -> postService.getPostById(1L));
     }
 
     @Test
-    void testDeletePostByIdWithCorrectId_Success() {
-        when(postRepository.findById(postOne.getId())).thenReturn(Optional.of(postOne));
-        postService.deletePostById(postOne.getId());
+    void testDeletePostById() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
 
-        verify(postRepository, times(1)).findById(postOne.getId());
-        verify(postRepository, times(1)).delete(postOne);
+        postService.deletePostById(1L);
+
+        verify(postRepository, times(1)).delete(post);
     }
 
     @Test
-    void testDeletePostByIdWithWrongId_ThrowPostNotFoundException() {
-        Long id = postOne.getId();
-        when(postRepository.findById(id)).thenReturn(Optional.empty());
-        assertThrows(PostNotFoundException.class, () -> postService.deletePostById(id));
-        verify(postRepository, times(1)).findById(id);
-        verify(postRepository, never()).delete(any(Post.class));
+    void testAddPost() {
+        PostRequest postRequest = new PostRequest("Title", "Content", "Author", PostStatus.CONCEPT, PostCategory.SPORTS);
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        Long postId = postService.addPost(postRequest);
+
+        assertNotNull(postId);
+        assertEquals(1L, postId);
     }
 
     @Test
-    public void testUpdatePostById() {
-        Long id = postOne.getId();
-        postRequest = PostRequest.builder()
-                .title("newTitle")
-                .content("newContent")
-                .author("newAuthor")
-                .build();
+    void testUpdatePostById() {
+        UpdatablePostRequest updatablePostRequest = new UpdatablePostRequest("Updated Title", "Updated Content", "Updated Author", PostCategory.SCIENCE);
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        when(postRepository.findById(id)).thenReturn(Optional.of(postOne));
-        when(postRepository.save(any(Post.class))).thenReturn(postOne);
-        postService.updatePostById(id, postRequest);
-        verify(postRepository, times(1)).save(postOne);
-        assertEquals("newTitle", postOne.getTitle());
-        assertEquals("newContent", postOne.getContent());
-        assertEquals("newAuthor", postOne.getAuthor());
-        assertEquals(LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonthValue(), LocalDate.now().getDayOfMonth()), postOne.getDate());
+        postService.updatePostById(1L, updatablePostRequest);
+
+        assertEquals("Updated Title", post.getTitle());
+        assertEquals("Updated Content", post.getContent());
+        assertEquals("Updated Author", post.getAuthor());
+        assertEquals(PostStatus.WAITING_FOR_APPROVAL, post.getPostStatus());
     }
 
     @Test
-    public void testUpdatePostById_PostNotFound() {
-        postRequest = PostRequest.builder()
-                .title("newTitle")
-                .content("newContent")
-                .author("newAuthor")
-                .build();
+    void testUpdatePostStatusById() {
+        UpdatePostStatusRequest updatePostStatusRequest = new UpdatePostStatusRequest(PostStatus.PUBLISHED);
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        when(postRepository.findById(999L)).thenReturn(Optional.empty());
-        assertThrows(PostNotFoundException.class, () -> postService.updatePostById(999L, postRequest));
+        postService.updatePostStatusById(1L, updatePostStatusRequest);
+
+        assertEquals(PostStatus.PUBLISHED, post.getPostStatus());
+    }
+
+    @Test
+    void testPublishPostById() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        postService.publishPostById(1L);
+
+        assertEquals(PostStatus.PUBLISHED, post.getPostStatus());
+    }
+
+    @Test
+    void testFindPostById() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
+
+        Post result = postService.findPostById(1L);
+
+        assertNotNull(result);
+        assertEquals(post.getId(), result.getId());
+    }
+
+    @Test
+    void testFindPostByIdNotFound() {
+        when(postRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class, () -> postService.findPostById(1L));
+    }
+
+    @Test
+    void testMapPostRequestToPostEntity() {
+        PostRequest postRequest = new PostRequest("Title", "Content", "Author", PostStatus.CONCEPT, PostCategory.SPORTS);
+
+        Post postEntity = postService.mapPostRequestToPostEntity(postRequest);
+
+        assertNotNull(postEntity);
+        assertEquals("Title", postEntity.getTitle());
+        assertEquals("Content", postEntity.getContent());
+        assertEquals("Author", postEntity.getAuthor());
+        assertEquals(PostStatus.CONCEPT, postEntity.getPostStatus());
+        assertEquals(PostCategory.SPORTS, postEntity.getCategory());
+    }
+
+    @Test
+    void testMapPostEntityToPostResponse() {
+        PostResponse postResponse = postService.mapPostEntityToPostResponse(post);
+
+        assertNotNull(postResponse);
+        assertEquals(post.getId(), postResponse.getId());
+        assertEquals(post.getTitle(), postResponse.getTitle());
+        assertEquals(post.getContent(), postResponse.getContent());
+        assertEquals(post.getAuthor(), postResponse.getAuthor());
     }
 }

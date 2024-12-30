@@ -1,0 +1,24 @@
+<div class="w-[500px] cursor-pointer" [routerLink]="['/posts', post.getId()]">
+  <a>
+    <div class="bg-cover text-center overflow-hidden"
+         style="min-height: 300px; background-image: url({{backgroundPicture}})"
+         title="Woman holding a mug">
+    </div>
+  </a>
+  <div
+    class="mt-3 bg-white rounded-b lg:rounded-b-none lg:rounded-r flex flex-col justify-between leading-normal">
+    <div class="">
+      <span
+         class="text-xs text-indigo-600 uppercase font-medium hover:text-gray-900 transition duration-500 ease-in-out">
+        {{post.getCategory()}}
+      </span>
+      <span class="block text-gray-900 text-xs mb-2 transition duration-500 ease-in-out">
+        Published by {{post.getAuthor()}} on {{post.getDate()}}
+      </span>
+      <span
+         class="block text-gray-900 font-bold text-2xl mb-2 hover:text-indigo-600 transition duration-500 ease-in-out">{{post.getTitle()}}
+      </span>
+      <p class="text-gray-700 text-base mt-2">{{post.getContent()}}</p>
+    </div>
+  </div>
+</div>

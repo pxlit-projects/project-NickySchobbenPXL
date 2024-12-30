@@ -17,17 +17,19 @@
       </svg>
     </button>
     <!-- Dropdown menu -->
-    <div *ngIf="isDropdownOpen"
-         class="absolute right-0 z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow mt-[10%]">
-      <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
-        <li>
-          <button (click)="toggleEditMode()" class="w-full text-left block py-2 px-4 hover:bg-gray-100">Edit</button>
-        </li>
-        <li>
-          <button (click)="deleteComment()" class="w-full text-left block py-2 px-4 hover:bg-gray-100">Remove</button>
-        </li>
-      </ul>
-    </div>
+    @if(isDropdownOpen) {
+      <div
+        class="absolute right-0 z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow mt-[10%]">
+        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
+          <li>
+            <button (click)="toggleEditMode()" class="w-full text-left block py-2 px-4 hover:bg-gray-100">Edit</button>
+          </li>
+          <li>
+            <button (click)="deleteComment()" class="w-full text-left block py-2 px-4 hover:bg-gray-100">Remove</button>
+          </li>
+        </ul>
+      </div>
+    }
   </footer>
   <textarea
     [ngClass]="{'bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-20 py-2 px-3 font-medium placeholder-gray-400 focus:outline-none focus:bg-white': editMode, 'bg-white leading-normal resize-none w-full h-20 py-2 px-3': !editMode}"
@@ -35,28 +37,33 @@
     [disabled]="!editMode"
     required>
   </textarea>
-  <div *ngIf="!editMode" class="flex items-center mt-10 space-x-4">
-    <button type="button"
-            class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-      <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
-      </svg>
-      Reply
-    </button>
-  </div>
-  <div class="mt-5" *ngIf="editMode">
-    <button
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-[100px]"
-      (click)="updateComment()"
-    >
-      Save
-    </button>
-    <button
-      class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-[100px] ml-3"
-      (click)="leaveEditMode()"
-    >
-      Cancel
-    </button>
-  </div>
+
+  @if(!editMode) {
+    <div class="flex items-center mt-10 space-x-4">
+      <button type="button"
+              class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
+        <svg class="mr-1.5 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
+        </svg>
+        Reply
+      </button>
+    </div>
+  }
+  @else {
+    <div class="mt-5">
+      <button
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-[100px]"
+        (click)="updateComment()"
+      >
+        Save
+      </button>
+      <button
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-[100px] ml-3"
+        (click)="leaveEditMode()"
+      >
+        Cancel
+      </button>
+    </div>
+  }
 </article>
 

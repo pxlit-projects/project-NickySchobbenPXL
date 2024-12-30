@@ -3,6 +3,7 @@
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
       <div class="p-6 bg-white border-b border-gray-200">
         <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+
           <div class="mb-4">
             <label for="title" class="text-xl text-gray-600">Title</label>
             <input
@@ -11,9 +12,11 @@
               formControlName="title"
               class="border-2 border-gray-300 p-2 w-full"
               value="">
-            <span *ngIf="myForm.get('title')?.invalid && myForm.get('title')?.touched" class="text-red-500">
+            @if(myForm.get('title')?.invalid && myForm.get('title')?.touched) {
+              <span class="text-red-500">
               Title is required
             </span>
+            }
           </div>
 
           <div class="mb-4">
@@ -24,10 +27,37 @@
               formControlName="author"
               class="border-2 border-gray-300 p-2 w-full"
               value="">
-            <span *ngIf="myForm.get('author')?.invalid && myForm.get('author')?.touched" class="text-red-500">
+            @if(myForm.get('author')?.invalid && myForm.get('author')?.touched) {
+              <span class="text-red-500">
               Author is required
             </span>
+            }
           </div>
+
+          <fieldset class="mb-4">
+            <legend class="text-xl text-gray-600 mb-2">Category</legend>
+            <div class="flex items-center mb-2">
+              <input type="radio" id="sports" formControlName="category" value="SPORTS" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="sports" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sports</label>
+            </div>
+            <div class="flex items-center mb-2">
+              <input type="radio" id="regional" formControlName="category" value="REGIONAL" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="regional" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Regional</label>
+            </div>
+            <div class="flex items-center mb-2">
+              <input type="radio" id="science" formControlName="category" value="SCIENCE" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="science" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Science</label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="politics" formControlName="category" value="POLITICS" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="politics" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Politics</label>
+            </div>
+            @if(myForm.get('category')?.invalid && myForm.get('category')?.touched) {
+              <span class="text-red-500">
+                Please select a category.
+              </span>
+            }
+          </fieldset>
 
           <div class="mb-3">
             <label for="content" class="text-xl text-gray-600 block">Content</label>
@@ -37,9 +67,11 @@
               name="content"
               class="border-2 border-gray-500 w-full h-72 mt-2"
             ></textarea>
-            <span *ngIf="myForm.get('content')?.invalid && myForm.get('content')?.touched" class="text-red-500">
-              Post cannot be submitted without any content.
-            </span>
+            @if(myForm.get('content')?.invalid && myForm.get('content')?.touched) {
+              <span class="text-red-500">
+                Post cannot be submitted without any content.
+              </span>
+            }
           </div>
 
           <div class="flex">
@@ -55,9 +87,11 @@
           </div>
 
           <div class="mt-5">
-            <span *ngIf="submittedMessage" class="text-green-500">
+            @if(submittedMessage) {
+              <span class="text-green-500">
                 {{submittedMessage}}
             </span>
+            }
           </div>
         </form>
       </div>

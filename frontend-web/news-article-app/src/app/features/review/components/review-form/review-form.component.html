@@ -12,31 +12,37 @@
               formControlName="reviewerName"
               class="border-2 border-gray-300 p-2 w-full"
               value="">
-            <span *ngIf="myForm.get('reviewerName')?.invalid && myForm.get('reviewerName')?.touched" class="text-red-500">
-              Reviewer is required
-            </span>
+            @if(myForm.get('reviewerName')?.invalid && myForm.get('reviewerName')?.touched) {
+              <span class="text-red-500">
+                Reviewer is required
+              </span>
+            }
           </div>
 
           <div class="block">
-            <label class="text-xl text-gray-600 block mt-5">Approval status:</label>
-            <select formControlName="action" class="border-2 border-gray-300 border-r p-2">
+            <label for="action" class="text-xl text-gray-600 block mt-5">Approval status:</label>
+            <select formControlName="action" id="action" class="border-2 border-gray-300 border-r p-2">
               <option value="Approve">Approve</option>
               <option value="Deny">Deny</option>
             </select>
           </div>
 
-          <div *ngIf="myForm.get('action')?.value === 'Deny'" class="mb-8 mt-5">
-            <label for="content" class="text-xl text-gray-600 block">Additional information</label>
-            <textarea
-              id="content"
-              formControlName="content"
-              name="content"
-              class="border-2 border-gray-500 w-full h-72 mt-2"
-            ></textarea>
-            <span *ngIf="myForm.get('content')?.invalid && myForm.get('content')?.touched" class="text-red-500">
-              Post cannot be reviewed without any additional information.
-            </span>
-          </div>
+          @if(myForm.get('action')?.value === 'Deny') {
+            <div class="mb-8 mt-5">
+              <label for="content" class="text-xl text-gray-600 block">Additional information</label>
+              <textarea
+                id="content"
+                formControlName="content"
+                name="content"
+                class="border-2 border-gray-500 w-full h-72 mt-2"
+              ></textarea>
+              @if(myForm.get('content')?.invalid && myForm.get('content')?.touched) {
+                <span class="text-red-500">
+                  Post cannot be reviewed without any additional information.
+                </span>
+              }
+            </div>
+          }
 
           <div class="mt-5">
             <button type="submit" [disabled]="myForm.invalid" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
@@ -44,12 +50,13 @@
             </button>
           </div>
 
-          <div class="mt-5">
-            <span *ngIf="submittedMessage" class="text-green-500">
-                {{submittedMessage}}
-            </span>
-          </div>
-
+          @if(submittedMessage) {
+            <div class="mt-5">
+              <span class="text-green-500">
+                  {{submittedMessage}}
+              </span>
+            </div>
+          }
         </form>
       </div>
     </div>

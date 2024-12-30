@@ -11,7 +11,7 @@ import {PostListComponent} from "../../components/post-list/post-list.component"
   styleUrl: './post-concept-page.component.css'
 })
 export class PostConceptPageComponent {
-  postStatus: string = 'CONCEPT';
-  title: string = "Concept posts";
-  subtitle: string = "These posts have been saved as a concept.";
+  postStatus = 'CONCEPT';
+  title = "Concept posts";
+  subtitle = "These posts have been saved as a concept.";
 }

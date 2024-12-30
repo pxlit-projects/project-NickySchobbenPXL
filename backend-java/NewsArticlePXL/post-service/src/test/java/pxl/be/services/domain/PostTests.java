@@ -1,41 +1,64 @@
 package pxl.be.services.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
+class PostTests {
 
-@SpringBootTest(classes = PostTests.class)
-public class PostTests {
+    @Test
+    void testPostConstructorAndGetters() {
+        Post post = new Post(1L, "Post Title", "Post Content", "Author", LocalDate.now(), PostStatus.PUBLISHED, PostCategory.POLITICS);
 
-    private Post post;
-
-    @BeforeEach
-    void setUp() {
-        post = new Post();
+        assertEquals(1L, post.getId());
+        assertEquals("Post Title", post.getTitle());
+        assertEquals("Post Content", post.getContent());
+        assertEquals("Author", post.getAuthor());
+        assertNotNull(post.getDate());
+        assertEquals(PostStatus.PUBLISHED, post.getPostStatus());
+        assertEquals(PostCategory.POLITICS, post.getCategory());
     }
 
     @Test
-    void testPost_NoArgsConstructor() {
-        assertThat(post).isNotNull();
-        assertThat(post.getAuthor()).isNullOrEmpty();
-        assertThat(post.getContent()).isNullOrEmpty();
-        assertThat(post.getTitle()).isNullOrEmpty();
+    void testPostBuilder() {
+        Post post = Post.builder()
+                .id(1L)
+                .title("Post Title")
+                .content("Post Content")
+                .author("Author")
+                .date(LocalDate.now())
+                .postStatus(PostStatus.PUBLISHED)
+                .category(PostCategory.POLITICS)
+                .build();
+
+        assertEquals(1L, post.getId());
+        assertEquals("Post Title", post.getTitle());
+        assertEquals("Post Content", post.getContent());
+        assertEquals("Author", post.getAuthor());
+        assertNotNull(post.getDate());
+        assertEquals(PostStatus.PUBLISHED, post.getPostStatus());
+        assertEquals(PostCategory.POLITICS, post.getCategory());
     }
 
     @Test
-    void testPost_AllArgsConstructor() {
-        LocalDate localDate = LocalDate.of(2024, 2, 14);
-        Post post = new Post(1L,"testTitle", "testContent", "testAuthor", localDate, PostStatus.APPROVED);
-        assertThat(post.getId()).isEqualTo(1);
-        assertThat(post.getTitle()).isEqualTo("testTitle");
-        assertThat(post.getContent()).isEqualTo("testContent");
-        assertThat(post.getAuthor()).isEqualTo("testAuthor");
-        assertThat(post.getDate()).isEqualTo(localDate);
-        assertThat(post.getPostStatus()).isEqualTo(PostStatus.APPROVED);
+    void testSetters() {
+        Post post = new Post();
+        post.setId(2L);
+        post.setTitle("New Title");
+        post.setContent("New Content");
+        post.setAuthor("New Author");
+        post.setDate(LocalDate.now());
+        post.setPostStatus(PostStatus.CONCEPT);
+        post.setCategory(PostCategory.REGIONAL);
+
+        assertEquals(2L, post.getId());
+        assertEquals("New Title", post.getTitle());
+        assertEquals("New Content", post.getContent());
+        assertEquals("New Author", post.getAuthor());
+        assertNotNull(post.getDate());
+        assertEquals(PostStatus.CONCEPT, post.getPostStatus());
+        assertEquals(PostCategory.REGIONAL, post.getCategory());
     }
 }

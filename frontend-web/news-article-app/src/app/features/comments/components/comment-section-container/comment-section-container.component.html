@@ -1,5 +1,7 @@
 <div class="bg-white rounded-lg border mt-10">
-  <h2 class="text-lg lg:text-2xl font-bold text-gray-900 ml-2 mt-2">Commentaar</h2>
+  <div class="flex justify-center mt-2 mb-2">
+    <h2 class="text-lg lg:text-2xl font-bold text-gray-900">Commentaar</h2>
+  </div>
   <div class="flex flex-col gap-5 m-3">
     <app-comment-input [postId]="postId"></app-comment-input>
     <app-comment-list [postId]="postId"></app-comment-list>

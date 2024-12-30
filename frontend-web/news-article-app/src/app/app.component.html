@@ -1,2 +1,6 @@
-<app-admin-navbar/>
+@if(showNavbar && user?.role === "admin") {
+  <app-admin-navbar></app-admin-navbar>
+} @else if (showNavbar && user?.role === "user") {
+  <app-user-navbar></app-user-navbar>
+}
 <router-outlet></router-outlet>

@@ -27,4 +27,7 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private PostStatus postStatus;
+
+    @Enumerated(EnumType.STRING)
+    private PostCategory category;
 }

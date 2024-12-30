@@ -24,7 +24,7 @@ export class PostUpdatePageComponent implements OnInit{
   ngOnInit(): void {
     this.serv.getPostById(this.postId).subscribe({
       next: (post) => {
-        this.updatablePost = this.serv.mapPostToUpdatablePost(post);
+        this.updatablePost = this.serv.getUpdatablePost(post);
       }
     });
   }

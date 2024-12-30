@@ -12,9 +12,11 @@
               name="title"
               class="border-2 border-gray-300 p-2 w-full"
               required>
-            <span *ngIf="!updatablePost.title && updatablePost.title !== ''" class="text-red-500">
-              Title is required
-            </span>
+            @if(!updatablePost.title || updatablePost.title === '') {
+              <span class="text-red-500">
+                Title is required
+              </span>
+            }
           </div>
 
           <div class="mb-4">
@@ -26,10 +28,45 @@
               name="author"
               class="border-2 border-gray-300 p-2 w-full"
               required>
-            <span *ngIf="!updatablePost.author && updatablePost.author !== ''" class="text-red-500">
-              Author is required
-            </span>
+            @if(!updatablePost.author || updatablePost.author === '') {
+              <span class="text-red-500">
+                Author is required
+              </span>
+            }
           </div>
+
+          <fieldset class="mb-4">
+            <legend class="text-xl text-gray-600 mb-2">Category</legend>
+
+            <div class="flex items-center mb-2">
+              <input type="radio" id="sports" value="SPORTS" [(ngModel)]="updatablePost.category" name="category"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="sports" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sports</label>
+            </div>
+
+            <div class="flex items-center mb-2">
+              <input type="radio" id="regional" value="REGIONAL" [(ngModel)]="updatablePost.category" name="category"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="regional" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Regional</label>
+            </div>
+
+            <div class="flex items-center mb-2">
+              <input type="radio" id="science" value="SCIENCE" [(ngModel)]="updatablePost.category" name="category"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="science" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Science</label>
+            </div>
+
+            <div class="flex items-center">
+              <input type="radio" id="politics" value="POLITICS" [(ngModel)]="updatablePost.category" name="category"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" required>
+              <label for="politics" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Politics</label>
+            </div>
+          </fieldset>
+          @if(!updatablePost.category || updatablePost.category === '') {
+            <span class="text-red-500">
+                Category is required
+              </span>
+          }
 
           <div class="mb-8">
             <label for="content" class="text-xl text-gray-600 block">Content</label>
@@ -39,12 +76,22 @@
               name="content"
               class="border-2 border-gray-500 w-full h-72 mt-2"
               required></textarea>
-            <span *ngIf="!updatablePost.content && updatablePost.content !== ''" class="text-red-500">
-              Post cannot be submitted without any content.
-            </span>
+            @if(!updatablePost.content || updatablePost.content === '') {
+              <span class="text-red-500">
+                  Post cannot be submitted without any content.
+              </span>
+            }
           </div>
-          <button type="submit" [disabled]="!updatablePost.title || !updatablePost.author || !updatablePost.content" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
+          <button type="submit" [disabled]="isSubmitDisabled()" class="p-3 bg-blue-500 text-white hover:bg-blue-400">Submit</button>
           <button type="button" class="p-3 bg-red-500 text-white hover:bg-red-400 ml-4" (click)="goBack()">Cancel</button>
+
+          <div class="mt-5">
+            @if(postUpdatedMessage) {
+              <span class="text-green-500">
+                {{postUpdatedMessage}}
+            </span>
+            }
+          </div>
         </form>
       </div>
     </div>

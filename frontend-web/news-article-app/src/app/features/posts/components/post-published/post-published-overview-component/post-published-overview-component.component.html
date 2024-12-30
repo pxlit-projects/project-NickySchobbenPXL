@@ -1,0 +1,10 @@
+<div class="h-[150px] flex items-center justify-center">
+  <app-post-filter (filterChange)="catchFilter($event)"></app-post-filter>
+</div>
+<div>
+  <app-post-published-list
+    [filteredPostCategory]="filteredPostCategory"
+    [filterAuthorOrContent]="filterAuthorOrContent"
+  >
+  </app-post-published-list>
+</div>

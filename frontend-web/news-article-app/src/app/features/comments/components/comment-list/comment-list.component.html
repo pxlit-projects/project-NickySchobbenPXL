@@ -1,8 +1,10 @@
-<div *ngIf="comments" class="flex flex-col gap-5 m-3">
+@if(comments) {
   <div class="flex flex-col gap-5 m-3">
-    <!-- Comment Container -->
-    <div *ngFor="let comment of comments">
-      <app-comment-item [comment]="comment"></app-comment-item>
+    <div class="flex flex-col gap-5 m-3">
+      <!-- Comment Container -->
+      @for(comment of comments; track comment.commentId) {
+        <app-comment-item [comment]="comment"></app-comment-item>
+      }
     </div>
   </div>
-</div>
+}

@@ -9,7 +9,7 @@ import pxl.be.services.domain.dto.PostRequest;
 import pxl.be.services.domain.dto.PostResponse;
 import pxl.be.services.domain.dto.UpdatablePostRequest;
 import pxl.be.services.domain.dto.UpdatePostStatusRequest;
-import pxl.be.services.services.IPostService;
+import pxl.be.services.service.IPostService;
 
 import java.net.URI;
 import java.util.List;
@@ -24,9 +24,14 @@ public class PostController {
 
     private final IPostService postService;
 
-    @GetMapping()
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts());
+    @GetMapping("/unpublished")
+    public ResponseEntity<List<PostResponse>> getAllUnpublishedPosts() {
+        return ResponseEntity.ok(postService.getAllUnpublishedPosts());
+    }
+
+    @GetMapping("/published")
+    public ResponseEntity<List<PostResponse>> getAllPublishedPosts() {
+        return ResponseEntity.ok(postService.getAllPublishedPosts());
     }
 
     @GetMapping("/{postId}")

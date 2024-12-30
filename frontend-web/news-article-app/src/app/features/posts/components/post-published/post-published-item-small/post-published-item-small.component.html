@@ -1,0 +1,10 @@
+<div class="cursor-pointer" [routerLink]="['/posts', post.getId()]">
+  <a>
+    <div class="h-40 bg-cover text-center overflow-hidden"
+         style="background-image: url({{backgroundPicture}})"
+         title="Woman holding a mug">
+    </div>
+  </a>
+  <a
+     class="text-gray-900 inline-block font-semibold text-md my-2 hover:text-indigo-600 transition duration-500 ease-in-out">{{post.getTitle()}}</a>
+</div>

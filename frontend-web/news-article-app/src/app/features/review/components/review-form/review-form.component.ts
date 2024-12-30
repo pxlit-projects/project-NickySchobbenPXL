@@ -3,6 +3,8 @@ import { ReviewService } from "../../services/ReviewService/review.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { NgIf, Location } from "@angular/common";
 import { timer } from 'rxjs';
+import {HttpErrorResponse} from "@angular/common/http";
+import {CreateReviewForm} from "../../../../core/models/reviews/CreateReviewForm";
 
 @Component({
   selector: 'app-review-form',
@@ -17,7 +19,7 @@ import { timer } from 'rxjs';
 export class ReviewFormComponent {
   @Input() postId!: number;
   serv: ReviewService = inject(ReviewService);
-  submittedMessage: string = "";
+  submittedMessage = "";
 
   myForm = new FormGroup({
     reviewerName: new FormControl('', [Validators.required, Validators.minLength(2)]),
@@ -39,9 +41,14 @@ export class ReviewFormComponent {
 
   onSubmit() {
     if (this.myForm.valid) {
-      const formData = this.myForm.value;
-      this.serv.createNewReviewForPost(formData, this.postId).subscribe({
-        error: (error: any) => {
+      const formData: CreateReviewForm = {
+        postId: this.postId,
+        reviewerName: this.myForm.value.reviewerName || '',
+        content: this.myForm.value.content || '',
+        action: this.myForm.value.action || '',
+      };
+      this.serv.createNewReviewForPost(formData).subscribe({
+        error: (error: HttpErrorResponse) => {
           console.error(error);
         }
       });

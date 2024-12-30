@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pxl.be.services.domain.dto.ReviewRequest;
-import pxl.be.services.services.ReviewService;
+import pxl.be.services.service.ReviewService;
 
 import java.net.URI;
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pxl.be.services.domain.PostCategory;
 import pxl.be.services.domain.PostStatus;
 
 @Data
@@ -15,4 +16,5 @@ public class PostRequest {
     private String content;
     private String author;
     private PostStatus postStatus;
+    private PostCategory category;
 }

@@ -5,9 +5,11 @@
       <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">{{subtitle}}</p>
     </div>
     <div class="grid gap-8 lg:grid-cols-2">
-      <div *ngFor="let post of posts" class="mb-20">
-        <app-post-item [post]="post"></app-post-item>
-      </div>
+      @for(post of posts; track post.getId()) {
+        <div class="mb-10">
+          <app-post-item [post]="post"></app-post-item>
+        </div>
+      }
     </div>
   </div>
 </section>
