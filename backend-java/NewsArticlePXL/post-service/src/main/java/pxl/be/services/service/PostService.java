@@ -1,9 +1,12 @@
-package pxl.be.services.service.impl;
+package pxl.be.services.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pxl.be.services.client.CommentClient;
+import pxl.be.services.client.ReviewClient;
 import pxl.be.services.domain.Post;
 import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.dto.PostRequest;
@@ -12,7 +15,6 @@ import pxl.be.services.domain.dto.UpdatablePostRequest;
 import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
-import pxl.be.services.service.IPostService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
 public class PostService implements IPostService {
 
     private final PostRepository postRepository;
+    private final ReviewClient reviewClient;
+    private final CommentClient commentClient;
     private static final Logger LOGGER = LoggerFactory.getLogger(PostService.class);
 
     @Override
@@ -39,9 +43,22 @@ public class PostService implements IPostService {
         return mapPostEntityToPostResponse(findPostById(postId));
     }
 
+    @Transactional
     @Override
     public void deletePostById(Long postId) {
-        postRepository.delete(findPostById(postId));
+        LOGGER.info("Attempting to delete post with postId" + postId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("post with id" + postId + " cannot be found"));
+        postRepository.delete(post);
+        LOGGER.info("Post with id " + postId + " has been successfully removed!");
+
+        LOGGER.info("Now attempting to communicate with the review-service to delete all reviews for post with postId: " + postId);
+        reviewClient.deleteAllReviewsForPostByPostId(postId);
+        LOGGER.info("Request to remove the reviews is successful");
+
+        LOGGER.info("Now attempting to communicate with the comment-service to delete all reviews for post with postId: " + postId);
+        commentClient.deleteAllCommentsForPostByPostId(postId);
+        LOGGER.info("Request to remove the comments is successful");
+
     }
 
     @Override

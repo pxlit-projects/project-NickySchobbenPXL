@@ -1,6 +1,8 @@
-package pxl.be.services.service.impl;
+package pxl.be.services.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pxl.be.services.domain.Comment;
 import pxl.be.services.domain.dto.CommentRequest;
@@ -8,7 +10,6 @@ import pxl.be.services.domain.dto.CommentResponse;
 import pxl.be.services.domain.dto.UpdatableCommentRequest;
 import pxl.be.services.exception.CommentNotFoundException;
 import pxl.be.services.repository.CommentRepository;
-import pxl.be.services.service.ICommentService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class CommentService implements ICommentService {
 
     private final CommentRepository commentRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentService.class);
 
     @Override
     public List<CommentResponse> getAllCommentsForPost(Long postId) {
@@ -53,6 +55,14 @@ public class CommentService implements ICommentService {
         comment.setDescription(updatableCommentRequest.getDescription());
         commentRepository.save(comment);
         return mapCommentEntityToCommentResponse(comment);
+    }
+
+    @Override
+    public void deleteAllCommentsForPostByPostId(Long postId) {
+        LOGGER.info("Attempting to delete all comments for post with postId " + postId);
+        List<Comment> listOfComments = commentRepository.findAll().stream().filter(comment -> Objects.equals(comment.getPostId(), postId)).toList();
+        commentRepository.deleteAll(listOfComments);
+        LOGGER.info("Deleting comments for post with postId: " + postId + " has been successful!");
     }
 
     public Comment getCommentById(Long commentId) {

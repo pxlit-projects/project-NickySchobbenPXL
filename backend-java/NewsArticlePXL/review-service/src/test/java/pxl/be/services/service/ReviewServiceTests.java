@@ -1,28 +1,31 @@
 package pxl.be.services.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import pxl.be.services.client.NotificationClient;
+import org.mockito.MockitoAnnotations;
 import pxl.be.services.client.PostClient;
 import pxl.be.services.domain.Review;
 import pxl.be.services.domain.ReviewStatus;
 import pxl.be.services.domain.dto.Notification;
 import pxl.be.services.domain.dto.ReviewRequest;
-import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.repository.ReviewRepository;
+import pxl.be.services.service.impl.MessagingService;
+import pxl.be.services.service.impl.ReviewService;
 
-import java.time.LocalDate;
+import java.util.Collections;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class ReviewServiceTests {
+import static org.junit.jupiter.api.Assertions.*;
+
+class ReviewServiceTests {
+
+    @InjectMocks
+    private ReviewService reviewService;
 
     @Mock
     private ReviewRepository reviewRepository;
@@ -31,104 +34,148 @@ public class ReviewServiceTests {
     private PostClient postClient;
 
     @Mock
-    private NotificationClient notificationClient;
+    private MessagingService messagingService;
 
-    @InjectMocks
-    private ReviewService reviewService;
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
-    void testAddReviewForPost_Approved() {
-        ReviewRequest reviewRequest = ReviewRequest.builder()
-                .postId(1L)
+    void testAddReviewForPost() {
+        ReviewRequest reviewRequest = new ReviewRequest();
+        reviewRequest.setPostId(1L);
+        reviewRequest.setReviewerName("John Doe");
+        reviewRequest.setReviewContent("Great post!");
+        reviewRequest.setReviewStatus(ReviewStatus.APPROVED);
+
+        Review savedReview = Review.builder()
+                .id(1L)
+                .postId(reviewRequest.getPostId())
+                .reviewerName(reviewRequest.getReviewerName())
+                .reviewContent(reviewRequest.getReviewContent())
+                .reviewStatus(reviewRequest.getReviewStatus())
+                .build();
+
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+        doNothing().when(postClient).updatePostStatus(eq(1L), any());
+        doNothing().when(messagingService).sendNotification(any(Notification.class));
+
+        Long reviewId = reviewService.addReviewForPost(reviewRequest);
+
+        assertNotNull(reviewId, "The returned review ID should not be null.");
+        assertEquals(1L, reviewId, "The returned review ID should match the mocked ID.");
+        verify(reviewRepository).save(any(Review.class));
+        verify(postClient).updatePostStatus(eq(1L), any());
+        verify(messagingService).sendNotification(any(Notification.class));
+    }
+
+    @Test
+    void testDeleteAllReviewsForPostByPostId() {
+        Long postId = 1L;
+        Review review = Review.builder()
+                .id(1L)
+                .postId(postId)
                 .reviewerName("John Doe")
                 .reviewContent("Great post!")
                 .reviewStatus(ReviewStatus.APPROVED)
                 .build();
 
-        Review mockReview = Review.builder()
+        when(reviewRepository.findAll()).thenReturn(Collections.singletonList(review));
+        doNothing().when(reviewRepository).deleteAll(any());
+
+        reviewService.deleteAllReviewsForPostByPostId(postId);
+
+        verify(reviewRepository).findAll();
+        verify(reviewRepository).deleteAll(eq(Collections.singletonList(review)));
+    }
+
+    @Test
+    void testUpdatePostStatus_Approved() {
+        ReviewRequest reviewRequest = new ReviewRequest();
+        reviewRequest.setPostId(1L);
+        reviewRequest.setReviewStatus(ReviewStatus.APPROVED);
+
+        Review savedReview = Review.builder()
                 .id(1L)
-                .postId(1L)
-                .reviewerName("John Doe")
-                .reviewContent("Great post!")
-                .reviewStatus(ReviewStatus.APPROVED)
-                .reviewDate(LocalDate.now())
+                .postId(reviewRequest.getPostId())
+                .reviewStatus(reviewRequest.getReviewStatus())
                 .build();
 
-        when(reviewRepository.save(any())).thenReturn(mockReview);
-        doNothing().when(postClient).updatePostStatus(any(), any());
-        doNothing().when(notificationClient).sendNotification(any());
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+        doNothing().when(postClient).updatePostStatus(eq(1L), any());
+        doNothing().when(messagingService).sendNotification(any(Notification.class));
 
-        Long reviewId = reviewService.addReviewForPost(reviewRequest);
+        reviewService.addReviewForPost(reviewRequest);
 
-        assertNotNull(reviewId);
-        verify(postClient, times(1)).updatePostStatus(eq(1L), any(UpdatePostStatusRequest.class));
-        verify(notificationClient, times(1)).sendNotification(any(Notification.class));
+        verify(postClient).updatePostStatus(eq(1L), any());
     }
 
-
     @Test
-    void testAddReviewForPost_Denied() {
-        ReviewRequest reviewRequest = ReviewRequest.builder()
-                .postId(2L)
-                .reviewerName("Jane Doe")
-                .reviewContent("Needs improvement.")
-                .reviewStatus(ReviewStatus.DENIED)
-                .build();
+    void testUpdatePostStatus_Denied() {
+        ReviewRequest reviewRequest = new ReviewRequest();
+        reviewRequest.setPostId(1L);
+        reviewRequest.setReviewStatus(ReviewStatus.DENIED);
 
-        Review mockReview = Review.builder()
+        Review savedReview = Review.builder()
                 .id(1L)
-                .postId(2L)
-                .reviewerName("Jane Doe")
-                .reviewContent("Needs improvement.")
-                .reviewStatus(ReviewStatus.DENIED)
-                .reviewDate(LocalDate.now())
+                .postId(reviewRequest.getPostId())
+                .reviewStatus(reviewRequest.getReviewStatus())
                 .build();
 
-        when(reviewRepository.save(any())).thenReturn(mockReview);
-        doNothing().when(postClient).updatePostStatus(any(), any());
-        doNothing().when(notificationClient).sendNotification(any());
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+        doNothing().when(postClient).updatePostStatus(eq(1L), any());
+        doNothing().when(messagingService).sendNotification(any(Notification.class));
 
-        Long reviewId = reviewService.addReviewForPost(reviewRequest);
+        reviewService.addReviewForPost(reviewRequest);
 
-        // Then
-        assertNotNull(reviewId);
-        verify(postClient, times(1)).updatePostStatus(eq(2L), any(UpdatePostStatusRequest.class));
-        verify(notificationClient, times(1)).sendNotification(any(Notification.class));
-    }
-
-
-    @Test
-    void testMapReviewRequestToReviewEntity() {
-        ReviewRequest reviewRequest = ReviewRequest.builder()
-                .postId(3L)
-                .reviewerName("Admin")
-                .reviewContent("Good content, needs minor revisions.")
-                .reviewStatus(ReviewStatus.APPROVED)
-                .build();
-
-        Review review = reviewService.mapReviewRequestToReviewEntity(reviewRequest);
-
-        // Then
-        assertEquals(reviewRequest.getPostId(), review.getPostId());
-        assertEquals(reviewRequest.getReviewerName(), review.getReviewerName());
-        assertEquals(reviewRequest.getReviewContent(), review.getReviewContent());
-        assertEquals(reviewRequest.getReviewStatus(), review.getReviewStatus());
+        verify(postClient).updatePostStatus(eq(1L), any());
     }
 
     @Test
-    void testSendNotification() {
-        // Given
-        ReviewRequest reviewRequest = ReviewRequest.builder()
-                .postId(4L)
-                .reviewerName("Moderator")
-                .reviewContent("Please address the following issues.")
-                .reviewStatus(ReviewStatus.DENIED)
+    void testSendNotification_Approved() {
+        ReviewRequest reviewRequest = new ReviewRequest();
+        reviewRequest.setPostId(1L);
+        reviewRequest.setReviewerName("John Doe");
+        reviewRequest.setReviewContent("Great post!");
+        reviewRequest.setReviewStatus(ReviewStatus.APPROVED);
+
+        Review savedReview = Review.builder()
+                .id(1L)
+                .postId(reviewRequest.getPostId())
+                .reviewStatus(reviewRequest.getReviewStatus())
                 .build();
 
-        // When
-        reviewService.sendNotification(reviewRequest);
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+        doNothing().when(postClient).updatePostStatus(eq(1L), any());
+        doNothing().when(messagingService).sendNotification(any(Notification.class));
 
-        // Then
-        verify(notificationClient, times(1)).sendNotification(any(Notification.class));
+        reviewService.addReviewForPost(reviewRequest);
+
+        verify(messagingService).sendNotification(any(Notification.class));
     }
+
+    @Test
+    void testSendNotification_Denied() {
+        ReviewRequest reviewRequest = new ReviewRequest();
+        reviewRequest.setPostId(1L);
+        reviewRequest.setReviewerName("John Doe");
+        reviewRequest.setReviewContent("Needs improvement");
+        reviewRequest.setReviewStatus(ReviewStatus.DENIED);
+
+        Review savedReview = Review.builder()
+                .id(1L)
+                .postId(reviewRequest.getPostId())
+                .reviewStatus(reviewRequest.getReviewStatus())
+                .build();
+
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+        doNothing().when(postClient).updatePostStatus(eq(1L), any());
+        doNothing().when(messagingService).sendNotification(any(Notification.class));
+
+        reviewService.addReviewForPost(reviewRequest);
+
+        verify(messagingService).sendNotification(any(Notification.class));
+    }
+
 }

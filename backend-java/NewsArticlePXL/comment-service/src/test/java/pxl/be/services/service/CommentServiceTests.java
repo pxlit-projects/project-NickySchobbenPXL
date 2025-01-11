@@ -11,7 +11,6 @@ import pxl.be.services.domain.dto.CommentResponse;
 import pxl.be.services.domain.dto.UpdatableCommentRequest;
 import pxl.be.services.exception.CommentNotFoundException;
 import pxl.be.services.repository.CommentRepository;
-import pxl.be.services.service.impl.CommentService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,8 +28,6 @@ class CommentServiceTests {
     private CommentService commentService;
 
     private Comment comment;
-    private CommentRequest commentRequest;
-    private CommentResponse commentResponse;
 
     @BeforeEach
     void setUp() {
@@ -41,16 +38,6 @@ class CommentServiceTests {
                 .postId(1L)
                 .description("This is a test comment.")
                 .commenter("John Doe")
-                .dateOfComment(LocalDate.now())
-                .build();
-
-        commentRequest = new CommentRequest("This is a test comment.", "John Doe");
-
-        commentResponse = CommentResponse.builder()
-                .commentId(1L)
-                .postId(1L)
-                .commenter("John Doe")
-                .description("This is a test comment.")
                 .dateOfComment(LocalDate.now())
                 .build();
     }
@@ -94,5 +81,43 @@ class CommentServiceTests {
         when(commentRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> commentService.getCommentById(1L));
+    }
+
+    @Test
+    void testDeleteAllCommentsForPostByPostId() {
+        Long postId = 1L;
+        List<Comment> comments = List.of(
+                Comment.builder().id(1L).postId(postId).description("First comment").build(),
+                Comment.builder().id(2L).postId(postId).description("Second comment").build()
+        );
+
+        when(commentRepository.findAll()).thenReturn(comments);
+        doNothing().when(commentRepository).deleteAll(anyList());
+
+        commentService.deleteAllCommentsForPostByPostId(postId);
+        verify(commentRepository).findAll();
+        verify(commentRepository).deleteAll(comments);
+    }
+
+    @Test
+    void testCreateNewComment() {
+        Long postId = 1L;
+        CommentRequest commentRequest = new CommentRequest();
+        commentRequest.setCommenter("John Doe");
+        commentRequest.setDescription("This is a comment.");
+
+        Comment savedComment = Comment.builder()
+                .id(1L)
+                .postId(postId)
+                .commenter(commentRequest.getCommenter())
+                .description(commentRequest.getDescription())
+                .dateOfComment(LocalDate.now())
+                .build();
+
+        when(commentRepository.save(any(Comment.class))).thenReturn(savedComment);
+        CommentResponse response = commentService.createNewComment(postId, commentRequest);
+        assertEquals("John Doe", response.getCommenter());
+        assertEquals("This is a comment.", response.getDescription());
+        verify(commentRepository).save(any(Comment.class));
     }
 }

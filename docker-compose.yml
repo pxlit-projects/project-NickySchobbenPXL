@@ -1,1 +1,105 @@
-# This file will contain a script in orde to start up the system (all microservices) 
+version: "3.3"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservice-network
+
+  postservice_db:
+    image: mysql:latest
+    container_name: postservice_db
+    environment:
+      MYSQL_DATABASE: postservice_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    ports:
+      - "3307:3306"
+    networks:
+      - microservice-network
+
+  commentservice_db:
+    container_name: commentservice_db
+    image: mysql:latest
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: "commentservice_db"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    networks:
+      - microservice-network
+
+  reviewservice_db:
+    container_name: reviewservice_db
+    image: mysql:latest
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: "reviewservice_db"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    networks:
+      - microservice-network
+
+  frontend:
+      build:
+        context: ./frontend-web/news-article-app
+        dockerfile: Dockerfile
+      ports:
+          - "80:80" 
+
+#   config-service:
+#     container_name: config-service
+#     build:
+#       dockerfile: ./config-service/Dockerfile
+#     ports:
+#       - "8088:8088"
+#     networks:
+#        - microservice-network
+#
+#   discovery-service:
+#     container_name: discovery-service
+#     build:
+#       dockerfile: ./discovery-service/Dockerfile
+#     ports:
+#        - "8061:8061"
+#     depends_on:
+#       config-service:
+#          condition: service_started
+#     networks:
+#       - microservice-network
+#
+#   gateway-service:
+#     container_name: gateway-service
+#     build:
+#       dockerfile: ./gateway-service/Dockerfile
+#     ports:
+#       - "8083:8083"
+#     depends_on:
+#       - discovery-service
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://discovery-service:8061"]
+#       interval: 30s
+#       retries: 5
+#     networks:
+#       - microservice-network
+#
+#   post-service:
+#     container_name: post-service
+#     build:
+#       dockerfile: ./post-service/Dockerfile
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       - discovery-service
+#       - postservice_db
+#       - rabbitmq
+#     networks:
+#       - microservice-network
+
+
+networks:
+  microservice-network:
+    driver: bridge

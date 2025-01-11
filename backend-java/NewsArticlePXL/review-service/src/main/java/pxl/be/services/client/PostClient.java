@@ -9,6 +9,6 @@ import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 @FeignClient(name = "post-service")
 public interface PostClient {
 
-    @PutMapping("/api/posts/{chatId}/update-poststatus")
-    void updatePostStatus(@PathVariable Long chatId, @RequestBody UpdatePostStatusRequest postStatusRequest);
+    @PutMapping("/api/posts/{postId}/update-poststatus")
+    void updatePostStatus(@PathVariable Long postId, @RequestBody UpdatePostStatusRequest postStatusRequest);
 }

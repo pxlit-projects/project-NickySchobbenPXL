@@ -14,4 +14,6 @@ public interface ICommentService {
     void deleteComment(Long commentId);
 
     CommentResponse updateComment(Long commentId, UpdatableCommentRequest updatableCommentRequest);
+
+    void deleteAllCommentsForPostByPostId(Long postId);
 }

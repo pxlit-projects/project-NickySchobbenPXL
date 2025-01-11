@@ -1,6 +1,7 @@
 package pxl.be.services.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +27,25 @@ public class PostController {
 
     @GetMapping("/unpublished")
     public ResponseEntity<List<PostResponse>> getAllUnpublishedPosts() {
+        LOGGER.info("Attempting to fetch unpublished posts");
         return ResponseEntity.ok(postService.getAllUnpublishedPosts());
     }
 
     @GetMapping("/published")
     public ResponseEntity<List<PostResponse>> getAllPublishedPosts() {
+        LOGGER.info("Attempting to fetch published posts");
         return ResponseEntity.ok(postService.getAllPublishedPosts());
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId) {
+        LOGGER.info("Attempting to fetch post with id " + postId);
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
     @PostMapping
     public ResponseEntity<Long> addPost(@RequestBody PostRequest postRequest) {
+        LOGGER.info("Attempting to add post");
         Long id = postService.addPost(postRequest);
         return ResponseEntity.created(URI.create("/api/post/" + id)).build();
     }
@@ -63,5 +68,11 @@ public class PostController {
         LOGGER.info("Publishing post with postId: " + postId);
         postService.publishPostById(postId);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+        postService.deletePostById(postId);
+        return ResponseEntity.noContent().build();
     }
 }

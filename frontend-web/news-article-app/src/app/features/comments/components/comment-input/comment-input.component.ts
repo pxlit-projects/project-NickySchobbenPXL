@@ -1,45 +1,49 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
-import {CreateComment} from "../../../../core/models/comments/CreateComment";
-import {CommentService} from "../../services/CommentService/comment.service";
-import {FormsModule} from "@angular/forms";
-import {AuthenticationService} from "../../../../core/services/AuthService/authentication.service";
-import {User} from "../../../../core/models/user/User";
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { CreateComment } from '../../../../core/models/comments/CreateComment';
+import { CommentService } from '../../services/CommentService/comment.service';
+import { FormsModule } from '@angular/forms';
+import { AuthenticationService } from '../../../../core/services/AuthService/authentication.service';
+import { User } from '../../../../core/models/user/User';
 
 @Component({
   selector: 'app-comment-input',
   standalone: true,
-  imports: [
-    FormsModule,
-  ],
+  imports: [FormsModule],
   templateUrl: './comment-input.component.html',
-  styleUrl: './comment-input.component.css'
+  styleUrls: ['./comment-input.component.css'],
 })
-export class CommentInputComponent implements OnInit{
+export class CommentInputComponent implements OnInit {
   @Input() postId!: number;
-  serv: CommentService = inject(CommentService);
-  authServ: AuthenticationService = inject(AuthenticationService);
-  user: User | null = this.authServ.getLoggedInUser();
-  newComment: CreateComment = new CreateComment("", "");
+  private serv = inject(CommentService);
+  private authServ = inject(AuthenticationService);
+  user: User | null = null;
+  newComment: CreateComment = new CreateComment('', '');
 
   ngOnInit(): void {
-    this.authServ.getLoggedInUserObservable().subscribe(user => {
-      if (user) {
-        this.newComment.commenter = user.username;  // Access the username of the logged-in user
-      }
+    this.authServ.getLoggedInUserObservable().subscribe({
+      next: (user) => {
+        if (user) {
+          this.user = user; // Store user data
+          this.newComment.commenter = user.username;
+        }
+      },
+      error: (err) => console.error('Error fetching logged-in user:', err),
     });
   }
 
-  public createNewComment(): void {
-    if (this.newComment.description) {
+  createNewComment(): void {
+    if (this.newComment.description?.trim()) {
       this.serv.createNewComment(this.postId, this.newComment).subscribe({
         next: (createdComment) => {
           console.log('Comment added:', createdComment);
+          this.newComment.description = '';
         },
         error: (error) => {
           console.error('Error adding comment:', error);
-        }
+        },
       });
-      this.newComment.description = "";
+    } else {
+      console.warn('Comment description is empty.');
     }
   }
 }

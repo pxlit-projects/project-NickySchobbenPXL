@@ -53,6 +53,7 @@ spring:
           filters:
             - RewritePath=/notification/(?<path>.*), /$\{path}
 
+
 eureka:
   client:
     serviceUrl:

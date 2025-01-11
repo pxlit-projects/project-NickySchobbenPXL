@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { Comment } from '../../../../core/models/comments/Comment'
@@ -63,9 +63,14 @@ export class CommentService {
     );
   }
 
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error(error);
-    throw new Error('Error occurred');
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occured: ', error.error.message);
+    } else {
+      console.error(`Backend returned code ${error.status},` +
+        `body was: ${error.error}`);
+    }
+    return throwError(() => new Error(`something bad happened; please try again later.`));
   }
 }
 

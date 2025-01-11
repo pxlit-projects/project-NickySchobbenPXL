@@ -1,11 +1,10 @@
-package pxl.be.services.service;
+package pxl.be.services.service.impl;
 
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import pxl.be.services.client.NotificationClient;
 import pxl.be.services.client.PostClient;
 import pxl.be.services.domain.PostStatus;
 import pxl.be.services.domain.Review;
@@ -14,8 +13,11 @@ import pxl.be.services.domain.dto.Notification;
 import pxl.be.services.domain.dto.ReviewRequest;
 import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.repository.ReviewRepository;
+import pxl.be.services.service.IReviewService;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class ReviewService implements IReviewService {
 
     private final ReviewRepository reviewRepository;
     private final PostClient postClient;
-    private final NotificationClient notificationClient;
+    private final MessagingService messagingService;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReviewService.class);
     @Override
     public Long addReviewForPost(ReviewRequest reviewRequest) {
@@ -34,6 +36,14 @@ public class ReviewService implements IReviewService {
         updatePostStatus(reviewRequest);
         sendNotification(reviewRequest);
         return id;
+    }
+
+    @Override
+    public void deleteAllReviewsForPostByPostId(Long postId) {
+        LOGGER.info("Now deleting all reviews for post with postId: " + postId);
+        List<Review> reviewsToDelete = reviewRepository.findAll().stream().filter(review -> Objects.equals(review.getPostId(), postId)).toList();
+        reviewRepository.deleteAll(reviewsToDelete);
+        LOGGER.info("Reviews for post with id " + postId +  " have been successfully deleted!");
     }
 
     private void updatePostStatus(ReviewRequest reviewRequest) {
@@ -70,7 +80,7 @@ public class ReviewService implements IReviewService {
                 .message(message)
                 .build();
 
-        notificationClient.sendNotification(notification);
+        messagingService.sendNotification(notification);
     }
 
     Review mapReviewRequestToReviewEntity(ReviewRequest reviewRequest) {

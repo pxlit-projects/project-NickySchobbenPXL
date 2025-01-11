@@ -46,4 +46,11 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{postId}/delete-all")
+    public ResponseEntity<Void> deleteAllCommentsForPost(@PathVariable Long postId) {
+        LOGGER.info("Request to delete all comments for post with postId " + postId + " received!");
+        commentService.deleteAllCommentsForPostByPostId(postId);
+        return ResponseEntity.noContent().build();
+    }
 }

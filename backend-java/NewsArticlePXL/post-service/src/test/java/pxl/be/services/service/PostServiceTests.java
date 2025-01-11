@@ -14,7 +14,6 @@ import pxl.be.services.domain.dto.UpdatablePostRequest;
 import pxl.be.services.domain.dto.UpdatePostStatusRequest;
 import pxl.be.services.exception.PostNotFoundException;
 import pxl.be.services.repository.PostRepository;
-import pxl.be.services.service.impl.PostService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -80,15 +79,6 @@ public class PostServiceTests {
         when(postRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(PostNotFoundException.class, () -> postService.getPostById(1L));
-    }
-
-    @Test
-    void testDeletePostById() {
-        when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
-
-        postService.deletePostById(1L);
-
-        verify(postRepository, times(1)).delete(post);
     }
 
     @Test

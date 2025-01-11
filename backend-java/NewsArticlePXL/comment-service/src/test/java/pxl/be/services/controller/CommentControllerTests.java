@@ -1,28 +1,37 @@
 package pxl.be.services.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import pxl.be.services.domain.dto.CommentRequest;
 import pxl.be.services.domain.dto.CommentResponse;
 import pxl.be.services.domain.dto.UpdatableCommentRequest;
-import pxl.be.services.service.ICommentService;
+import pxl.be.services.service.CommentService;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@WebMvcTest(CommentController.class)
 class CommentControllerTests {
 
-    @Mock
-    private ICommentService commentService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private CommentController commentController;
+    @MockBean
+    private CommentService commentService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private CommentResponse commentResponse;
     private CommentRequest commentRequest;
@@ -37,56 +46,80 @@ class CommentControllerTests {
                 .postId(1L)
                 .commenter("John Doe")
                 .description("This is a test comment.")
-                .dateOfComment(java.time.LocalDate.now())
+                .dateOfComment(LocalDate.now())
                 .build();
 
         commentRequest = new CommentRequest("This is a test comment.", "John Doe");
-
         updatableCommentRequest = new UpdatableCommentRequest("Updated comment description.");
     }
 
     @Test
-    void testGetAllCommentsByPostId() {
+    void testGetAllCommentsByPostId() throws Exception {
         List<CommentResponse> comments = List.of(commentResponse);
         when(commentService.getAllCommentsForPost(1L)).thenReturn(comments);
 
-        ResponseEntity<List<CommentResponse>> result = commentController.getAllCommentsByPostId(1L);
+        mockMvc.perform(get("/api/comment/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(comments.size()));
 
-        assertNotNull(result);
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(comments, result.getBody());
+        verify(commentService, times(1)).getAllCommentsForPost(1L);
     }
 
     @Test
-    void testAddNewComment() {
-        when(commentService.createNewComment(1L, commentRequest)).thenReturn(commentResponse);
+    void testAddNewComment() throws Exception {
+        when(commentService.createNewComment(eq(1L), any(CommentRequest.class)))
+                .thenReturn(commentResponse);
 
-        ResponseEntity<CommentResponse> result = commentController.addNewComment(1L, commentRequest);
+        String commentRequestString = objectMapper.writeValueAsString(commentRequest);
 
-        assertNotNull(result);
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(commentResponse, result.getBody());
+        mockMvc.perform(post("/api/comment/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(commentRequestString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.commenter").value(commentResponse.getCommenter()))
+                .andExpect(jsonPath("$.description").value(commentResponse.getDescription()));
+
+        verify(commentService, times(1)).createNewComment(eq(1L), any(CommentRequest.class));
     }
 
     @Test
-    void testUpdateComment() {
-        when(commentService.updateComment(1L, updatableCommentRequest)).thenReturn(commentResponse);
+    void testUpdateComment() throws Exception {
+        when(commentService.updateComment(eq(1L), any(UpdatableCommentRequest.class))).thenReturn(commentResponse);
 
-        ResponseEntity<CommentResponse> result = commentController.updateComment(1L, updatableCommentRequest);
+        String updatableCommentString = objectMapper.writeValueAsString(updatableCommentRequest);
 
-        assertNotNull(result);
-        assertEquals(200, result.getStatusCodeValue());
-        assertEquals(commentResponse, result.getBody());
+        mockMvc.perform(put("/api/comment/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatableCommentString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.commenter").value(commentResponse.getCommenter()))
+                .andExpect(jsonPath("$.description").value(commentResponse.getDescription()));
+
+        verify(commentService, times(1)).updateComment(eq(1L), any(UpdatableCommentRequest.class));
     }
 
+
     @Test
-    void testDeleteComment() {
+    void testDeleteComment() throws Exception {
         doNothing().when(commentService).deleteComment(1L);
 
-        ResponseEntity<Void> result = commentController.deleteComment(1L);
+        mockMvc.perform(delete("/api/comment/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
 
-        assertNotNull(result);
-        assertEquals(204, result.getStatusCodeValue());
         verify(commentService, times(1)).deleteComment(1L);
+    }
+
+    @Test
+    void testDeleteAllCommentsForPost() throws Exception {
+        doNothing().when(commentService).deleteAllCommentsForPostByPostId(1L);
+
+        mockMvc.perform(delete("/api/comment/1/delete-all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(commentService, times(1)).deleteAllCommentsForPostByPostId(1L);
     }
 }
