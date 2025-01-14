@@ -45,6 +45,7 @@ export class CommentItemComponent {
         next: () => console.log('Comment updated successfully.'),
         error: (err: HttpErrorResponse) => console.error('Error updating comment:', err),
     });
+    this.editMode = false;
   }
 
   public leaveEditMode(): void {
